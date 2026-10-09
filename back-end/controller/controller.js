@@ -18,7 +18,18 @@ const validateUser = [
   body("username")
     .trim()
     .isLength({ max: 15, min: 4 })
-    .withMessage(`Name ${lengthErr}`),
+    .withMessage(`Name ${lengthErr}`)
+    .custom(async (value) => {
+      let nameCheck = await db.GetUserByName(value)
+      console.log(value)
+      console.log(nameCheck)
+      if (nameCheck == null) {
+        return true
+      } else {
+        throw new Error()
+      }
+    })
+    .withMessage("username is taken"),
   body("password")
     .trim()
     .isLength({ max: 15, min: 3 })
