@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+  previewFeatures = ["partialIndexes"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {   
+id String @id @default(uuid())
+githubID String? 
+username String @unique
+password String
+email String
+status String?
+avatarUrl String?
+createdAt DateTime @default(now())
+likedPosts Post[] 
+posts Post[] @relation("Posts")
+sentNotifications     Notification[] @relation("SentNotifications")
+receivedNotifications Notification[] @relation("ReceivedNotifications")
+following Follow[] @relation("following")
+followers Follow[] @relation("followers")
+comments Comment[]
+
+ }
+
+model Post {
+  id Int @id @default(autoincrement())
+  text String 
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt
+  likes Int @default(0)
+  author User @relation("Posts", fields: [authorId], references: [id])
+  authorId String
+  likedBy User[]
+  notification Notification[]
+  imageUrl String?
+  parent Post? @relation("replies" ,fields: [parentId] , references: [id], onDelete: Cascade)
+  parentId Int? 
+  replies Post[] @relation("replies")
+  @@unique([authorId, text], where : { parentId : null})
+  @@unique([authorId, text, parentId])
+}
+
+model Follow{
+  id Int @id @default(autoincrement())
+  follower User @relation("following", fields: [followerId], references: [id])
+  followerId String
+  following User @relation("followers", fields: [followingId], references: [id])
+  followingId String
+ 
+  @@unique([followerId, followingId])
+}
+
+
+model Comment {
+  id Int @id @default(autoincrement())
+  text String 
+  likes Int @default(0)
+  CreatedAt DateTime @default(now())
+  // post Post @relation(fields: [postId], references: [id])
+  // postId Int
+  author User @relation(fields: [authorId], references: [id])
+  authorId String
+  parent Comment? @relation("replies" ,fields: [parentId] , references: [id])
+  parentId Int? 
+  replies Comment[] @relation("replies")
+
+}
+
+model Notification {
+  id String @id @default(uuid())
+  type String
+  isRead  Boolean  @default(false)
+  post Post? @relation(fields: [postId], references: [id],  onDelete: Cascade)
+  postId Int?
+  sender      User     @relation("SentNotifications", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId    String
+  receiver    User     @relation("ReceivedNotifications", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId  String
+  
+}
+
+// model Image {
+//   id String @id @default(uuid())
+//   ImageUrl String
+//   post Post @relation(fields: [postId], references: [id])
+//   postId Int
+// }

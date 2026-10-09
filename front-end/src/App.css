@@ -1,0 +1,46 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,600;1,400;1,600&display=swap");
+@import "tailwindcss";
+
+html,
+body,
+label {
+  font-family: "Roboto", sans-serif;
+}
+html {
+  font-size: 100%;
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+@media (max-width: 576px) {
+  html {
+    font-size: 100%;
+  }
+}
+
+@layer base {
+  html {
+    /* Standard specification */
+    scrollbar-width: auto;
+    scrollbar-color: rgb(107, 114, 128) rgba(0, 0, 0, 0.918);
+  }
+
+  /* Chrome, Edge, and Safari specifications */
+  html::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background-color: #38bdf8;
+    border-radius: 9999px;
+  }
+}
+/* input {
+  border: solid 1px black;
+}*/
