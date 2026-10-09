@@ -102,10 +102,7 @@ app.use(passport.session())
 
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://127.0.0.1:5173",
-      "https://odin-book-2iy5ut2fd-lucioscarafioccas-projects.vercel.app",
-    ],
+    origin: [process.env.FRONTEND_URL || "http://127.0.0.1:5173", ,],
     methods: ["GET", "POST"],
   },
 })
