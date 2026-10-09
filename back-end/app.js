@@ -11,7 +11,6 @@ import passportjwt from "./passport.js"
 import db from "./db/queries.js"
 import multer from "multer"
 import { createClient } from "@supabase/supabase-js"
-import e from "express"
 passportjwt(passport)
 
 const storage = multer.memoryStorage()
@@ -103,7 +102,10 @@ app.use(passport.session())
 
 const io = new Server(server, {
   cors: {
-    origin: "http://127.0.0.1:5173",
+    origin: [
+      "http://127.0.0.1:5173",
+      "https://odin-book-2iy5ut2fd-lucioscarafioccas-projects.vercel.app",
+    ],
     methods: ["GET", "POST"],
   },
 })
@@ -673,7 +675,7 @@ app.get("/test", (req, res) => {
   // console.log(req.isAuthenticated())
   res.json("faasd")
 })
-const PORT = 3000
+const PORT = process.env.PORT || 3000
 server.listen(PORT, () => {
-  console.log("server running at http://localhost:3000")
+  console.log(`Server running at port ${PORT}`)
 })

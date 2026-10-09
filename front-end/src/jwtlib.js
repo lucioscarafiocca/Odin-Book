@@ -28,14 +28,14 @@ function attachToken() {
   console.log(token)
   const notExpired = moment().isBefore(checkExpiration())
   if (token && notExpired) {
-    return io("http://localhost:3000", {
+    return io(import.meta.env.VITE_API_URL || "http://localhost:3000", {
       extraHeaders: {
         Authorization: token,
       },
     })
   } else {
     logOut()
-    return io("http://localhost:3000")
+    return io(import.meta.env.VITE_API_URL || "http://localhost:3000")
   }
 }
 
