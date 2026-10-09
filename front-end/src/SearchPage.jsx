@@ -19,6 +19,7 @@ function SearchPage() {
   const [search, setSearch] = useState()
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(0)
+  const [suggestions, setSuggestions] = useState()
   const [loadingPosts, setLoadingPosts] = useState(false)
   const navigate = useNavigate()
   const parentRef = useRef()
@@ -116,6 +117,20 @@ function SearchPage() {
     }
   }
 
+  function handleFollow(id) {
+    const newUsers = suggestions.map((element) => {
+      return element.id == id
+        ? !element.followers[0]
+          ? { ...element, followers: [element.username] }
+          : { ...element, followers: [] }
+        : element
+    })
+    console.log(newUsers)
+    setSuggestions(newUsers)
+
+    socket.emit("follow", id)
+  }
+
   function handleMention(text) {
     const parts = text.split(/(\s+)/)
     const formattedText = parts.map((part, index) => {
@@ -158,10 +173,12 @@ function SearchPage() {
     // rowVirtualizer.measure()
     rowVirtualizer.scrollToOffset(0)
     socket.emit("searchData", search.toLowerCase(), 0, (data) => {
-      console.log(data.data)
+      console.log(data)
       setPage(0)
       setClient(data.data.client)
       setData(data.data.fullData)
+      searchParams.get("q") == false &&
+        setSuggestions(data.data.fullSuggestions)
       setLoading(false)
       setSearch(search)
     })
@@ -174,7 +191,10 @@ function SearchPage() {
     }
 
     document.addEventListener("mousedown", handleClickOutside)
-
+    socket.on("connect_error", (err) => {
+      console.log(err)
+      navigate("/")
+    })
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
@@ -185,7 +205,7 @@ function SearchPage() {
       {console.log(client)}
       {loading ? (
         <div
-          className="h-lvh bg-black flex items-center justify-center grow  "
+          className="h-lvh bg-black flex  items-center justify-center grow  "
           role="status"
         >
           <svg
@@ -218,7 +238,7 @@ function SearchPage() {
 
           <div
             ref={parentRef}
-            className="border border-[#16181C] grow-2  flex-col text-white max-w-170    max-h-full"
+            className="border  border-[#16181C] max-sm:border-black max-sm:border-0 grow-2  flex-col text-white max-w-170    max-h-full"
           >
             <div className=" flex font-bold grow text-2xl z-20 sticky top-0 max-sm:border-b max-sm:border-[#16181C]  bg-black/90 backdrop-blur-md gap-7 p-3  ">
               <button className="pl-2" onClick={() => navigate(-1)}>
@@ -524,10 +544,68 @@ function SearchPage() {
                 })}
               </div>
             ) : (
-              <div className="text-white text-3xl p-10 grow max-sm:h-140  max-w-170 wrap-anywhere flex justify-center font-bold">
-                {searchParams.get("q") == false
-                  ? "Use the searchbar to explore posts"
-                  : `No post found for ${searchParams.get("q")}`}
+              <div className="text-white text-3xl  grow  max-sm:min-h-lvh  max-w-170 wrap-anywhere flex justify-center font-bold">
+                {searchParams.get("q") == false ? (
+                  <div>
+                    <p className="p-10">"Use the searchbar to explore posts"</p>
+
+                    <div className="flex-col items-start  pb-4 hidden max-sm:flex pt-20 grow w-full  rounded-2xl   text-2xl  ">
+                      <div className="font-bold text-2xl pl-6 pb-3">
+                        Following suggestions
+                      </div>
+                      {suggestions &&
+                        suggestions.map((element) => {
+                          console.log("asdasdasdasdasd")
+                          return (
+                            <div
+                              className="flex-col items-center w-full pl-4 pr-4 border-b border-[#16181C]  hover:bg-white/10 transition-colors duration-200 font-bold text-xl  "
+                              onClick={() => navigate(`/${element.username}`)}
+                              key={element.id}
+                            >
+                              <div className="flex items-center">
+                                <img
+                                  className="max-h-10 rounded-full m-2 w  mr-4 aspect-square object-cover"
+                                  src={element.avatarUrl}
+                                  alt=""
+                                />
+                                <div className="flex justify-between grow">
+                                  <div>{element.username}</div>
+                                  {element.username ==
+                                  client.username ? null : !element
+                                      .followers[0] ? (
+                                    <button
+                                      className="bg-white  text-sm hover:bg-white/90 flex  rounded-full pl-3 pr-3 p-1.5   text-black transition-opacity"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleFollow(element.id, element)
+                                      }}
+                                    >
+                                      Follow
+                                    </button>
+                                  ) : (
+                                    <button
+                                      className="bg-white text-black text-sm rounded-full  pl-3 pr-3 p-1.5  hover:bg-white/90 transition-opacity"
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleFollow(element.id, element)
+                                      }}
+                                    >
+                                      Unfollow
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                              <p className="font-extralight text-base pl-16 pb-2">
+                                {element.status}
+                              </p>
+                            </div>
+                          )
+                        })}
+                    </div>
+                  </div>
+                ) : (
+                  `No post found for ${searchParams.get("q")}`
+                )}
               </div>
             )}
             <Footer

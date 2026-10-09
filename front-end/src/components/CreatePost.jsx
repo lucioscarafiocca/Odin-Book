@@ -81,7 +81,12 @@ function CreatePost({
     // formData.append("username", username)
 
     axios
-      .post(`http://localhost:3000/upload/post`, formData)
+      .post(
+        import.meta.env.VITE_API_URL
+          ? `${import.meta.env.VITE_API_URL}/upload/post`
+          : "http://localhost:3000/upload/post",
+        formData
+      )
       .then((res) => {
         setPublicUrl(res.data)
         console.log(res)

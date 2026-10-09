@@ -185,7 +185,12 @@ function Post({ dataProp = null, userProp }) {
     // formData.append("username", username)
 
     axios
-      .post(`http://localhost:3000/upload/post`, formData)
+      .post(
+        import.meta.env.VITE_API_URL
+          ? `${import.meta.env.VITE_API_URL}/upload/post`
+          : "http://localhost:3000/upload/post",
+        formData
+      )
       .then((res) => setPublicUrl(res.data))
       .catch((err) => console.log(err))
 
@@ -296,7 +301,7 @@ function Post({ dataProp = null, userProp }) {
                 data.parentId || data.replies[1]
                   ? "pb-250 max-sm:pb-100"
                   : "pb-0"
-              } grow-2  max-w-170 max-h-full border-b-black border border-[#16181C]`}
+              } grow-2  max-w-170 max-h-full border-b-black border border-[#16181C] max-sm:border-black max-sm:border-0`}
             >
               <div className=" flex font-bold grow text-xl sticky top-0 bg-black/70 backdrop-blur-md gap-7 p-3  ">
                 <button className="pl-2" onClick={() => navigate(-1)}>

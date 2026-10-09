@@ -529,6 +529,7 @@ io.on("connection", (socket) => {
     const userId = socket.request.user.id
     const data =
       search == false ? [] : await db.SearchPosts(search, userId, page)
+    const suggestions = search == false && (await db.GetSuggestions(userId))
     const bucket = supabase.storage.from("AvatarUrls")
     console.log(data)
     const fullData = data.map((element) => {
@@ -540,10 +541,17 @@ io.on("connection", (socket) => {
         author: { ...element.author, avatarUrl: data.publicUrl },
       }
     })
+    const fullSuggestions = suggestions.map((element) => {
+      const { data, error } = element.avatarUrl
+        ? bucket.getPublicUrl(element.avatarUrl)
+        : bucket.getPublicUrl("default-user-pic.jpg")
+      return { ...element, avatarUrl: data.publicUrl }
+    })
     callback({
       status: "ok",
       data: {
         fullData,
+        fullSuggestions,
         client: {
           username: socket.request.user.username,
           receivedNotifications: socket.request.user.receivedNotifications,

@@ -274,7 +274,7 @@ function ProfilePage() {
         setLoading={setMorePosts}
       ></Sidebar>
       {error ? (
-        <p className="text-white text-3xl p-10 grow border max-w-170 border-[#16181C] flex justify-center font-bold">
+        <p className="text-white text-3xl p-10 grow border max-w-170 border-[#16181C] max-sm:border-black max-sm:border-0 flex justify-center font-bold">
           {error}
         </p>
       ) : (

@@ -47,7 +47,12 @@ function EditUser({ isOpen = false, setOpenModal, data, setEditData }) {
     setPicture(url)
     console.log(url)
     axios
-      .post("http://localhost:3000/upload", formData)
+      .post(
+        import.meta.env.VITE_API_URL
+          ? `${import.meta.env.VITE_API_URL}/upload`
+          : "http://localhost:3000/upload",
+        formData
+      )
       .then((res) => console.log(res))
       .catch((err) => console.log(err))
   }

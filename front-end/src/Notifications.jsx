@@ -91,7 +91,7 @@ function Notifications() {
   return (
     <>
       {data ? (
-        <div className="  bg-black text-white flex align-middle grow gap-0.5">
+        <div className=" h-full max-sm:min-h-lvh bg-black text-white flex align-middle grow gap-0.5">
           {user && (
             <Sidebar
               data={{
@@ -102,7 +102,7 @@ function Notifications() {
               setLoading={setLoading}
             ></Sidebar>
           )}
-          <div className=" border  border-[#16181C] flex-col text-white grow  max-h-full">
+          <div className=" border  border-[#16181C] flex-col max-sm:border-black max-sm:border-0 text-white grow  max-h-full">
             <div className=" flex font-bold grow text-2xl sticky top-0 bg-black/70 backdrop-blur-md gap-7 p-3  ">
               <button className="pl-2" onClick={() => navigate(-1)}>
                 <ArrowLeft className="hover:scale-130 transition-transform duration-200" />
@@ -122,7 +122,9 @@ function Notifications() {
                 )
               })
             ) : (
-              <p>No notifications </p>
+              <p className="p-10 text-center font-bold text-3xl">
+                No notifications
+              </p>
             )}
             <Footer
               data={{

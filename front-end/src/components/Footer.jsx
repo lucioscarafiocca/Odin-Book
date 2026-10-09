@@ -120,7 +120,12 @@ function Footer({ data, setLoading }) {
               />
 
               {(notification || data.receivedNotifications.length) < 10 ? (
-                <div>
+                <div
+                  className={`${
+                    (notification || data.receivedNotifications.length) == 0 &&
+                    "hidden"
+                  }`}
+                >
                   <svg
                     className="absolute -top-2 left-4"
                     xmlns="http://www.w3.org/2000/svg"

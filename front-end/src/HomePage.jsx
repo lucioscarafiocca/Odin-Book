@@ -314,7 +314,7 @@ function MainPage() {
           >
             <div
               ref={listRef}
-              className="border box-border  border-[#16181C]"
+              className="border box-border max-sm:border-black max-sm:border-0  border-[#16181C]"
               style={{
                 height: `${rowVirtualizer.getTotalSize()}px`,
                 width: "100%",

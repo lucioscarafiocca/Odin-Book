@@ -57,6 +57,10 @@ function Follow() {
       setClient(res.data.client)
     })
     setUsername(username)
+    socket.on("connect_error", (err) => {
+      console.log(err)
+      navigate("/")
+    })
   }, [params])
 
   return (
@@ -69,7 +73,7 @@ function Follow() {
             receivedNotifications: client && client.receivedNotifications,
           }}
         ></Sidebar>
-        <div className=" flex-col   border border-[#16181C] max-w-160  grow overflow-y-auto  max-h-full">
+        <div className=" flex-col   border border-[#16181C] max-sm:border-black max-sm:border-0 max-w-160  grow overflow-y-auto  max-h-full">
           <div className="max-sm:h-full">
             <div className="flex sticky bg-black/70 backdrop-blur-md gap-5 ">
               <button className="pl-4" onClick={() => navigate(`/${username}`)}>
