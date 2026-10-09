@@ -48,11 +48,16 @@ function App() {
     e.preventDefault()
     if (email && password) {
       axios
-        .post("http://localhost:3000/login", {
-          headers: { "Content-Type": "application/json" },
-          email: email.toLowerCase(),
-          password,
-        })
+        .post(
+          import.meta.env.VITE_API_URL
+            ? `${import.meta.env.VITE_API_URL}/login`
+            : "http://localhost:3000/login",
+          {
+            headers: { "Content-Type": "application/json" },
+            email: email.toLowerCase(),
+            password,
+          }
+        )
         .then((res) => {
           console.log(res)
           setLocalStorage(res.data)

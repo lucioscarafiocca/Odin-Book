@@ -21,13 +21,18 @@ function Signup() {
   function handleSignup(e) {
     e.preventDefault()
     axios
-      .post("http://localhost:3000/users", {
-        headers: { "Content-Type": "application/json" },
-        username: userData.username.toLowerCase(),
-        password: userData.password,
-        confirmPassword: userData.confirmPassword,
-        email: userData.email.toLowerCase(),
-      })
+      .post(
+        import.meta.env.VITE_API_URL
+          ? `${import.meta.env.VITE_API_URL}/users`
+          : "http://localhost:3000/users",
+        {
+          headers: { "Content-Type": "application/json" },
+          username: userData.username.toLowerCase(),
+          password: userData.password,
+          confirmPassword: userData.confirmPassword,
+          email: userData.email.toLowerCase(),
+        }
+      )
       .then((response) => {
         console.log(response)
         setLocalStorage(response.data)
