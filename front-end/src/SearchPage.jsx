@@ -604,7 +604,9 @@ function SearchPage() {
                     </div>
                   </div>
                 ) : (
-                  `No post found for ${searchParams.get("q")}`
+                  <p className="p-10">
+                    "No post found for {searchParams.get("q")}"
+                  </p>
                 )}
               </div>
             )}

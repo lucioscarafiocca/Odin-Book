@@ -390,7 +390,7 @@ function ProfilePage() {
             className=" flex-col bg-black box-border text-white  max-h-full"
           >
             <div
-              className="border border-t-0 bg-black  border-[#16181C]"
+              className="border border-t-0 bg-black max-sm:border-black max-sm:border-0 border-[#16181C]"
               ref={listRef}
               style={{
                 height: `${rowVirtualizer.getTotalSize()}px`,

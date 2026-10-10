@@ -113,8 +113,8 @@ export function CustomTypeaheadPlugin({ dialog, cords, post }) {
               position: "absolute",
               top: `${
                 post
-                  ? cords.top - dialogRect.top + 18
-                  : cords.top - dialogRect.top - 50
+                  ? rect.top - dialogRect.top + 18
+                  : rect.top - dialogRect.top - 50
               }px`,
               left: `${0}px`,
             }}

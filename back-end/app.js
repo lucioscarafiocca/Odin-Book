@@ -529,7 +529,7 @@ io.on("connection", (socket) => {
     const userId = socket.request.user.id
     const data =
       search == false ? [] : await db.SearchPosts(search, userId, page)
-    const suggestions = search == false && (await db.GetSuggestions(userId))
+    const suggestions = search == false ? await db.GetSuggestions(userId) : []
     const bucket = supabase.storage.from("AvatarUrls")
     console.log(data)
     const fullData = data.map((element) => {
