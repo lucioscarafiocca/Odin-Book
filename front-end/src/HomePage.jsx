@@ -219,7 +219,8 @@ function MainPage() {
       lastItem.index > 0 &&
       virtualItem.length >= 19 &&
       !fetching &&
-      data.posts.length % 20 === 0
+      data.posts.length % 20 === 0 &&
+      data.posts.length != 0
     ) {
       setFetching(true)
       // setKey(data.posts.length)

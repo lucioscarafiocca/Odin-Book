@@ -62,7 +62,7 @@ function Footer({ data, setLoading }) {
   return (
     <>
       <div
-        className={`  border-t border-[#16181C] items-end  max-sm:invisible z-20 hidden max-sm:block sticky bottom-0 bg-black p-1  scale-0 transition-transform :duration-300 origin-bottom justify-between ${
+        className={`  border-t border-[#16181C] items-end max-sm:block max-sm:invisible z-20 hidden sticky bottom-0 bg-black p-1  scale-0 transition-transform :duration-300 origin-bottom justify-between ${
           isVisible ? "max-sm:visible max-sm:scale-100 " : " "
         } text-white`}
       >

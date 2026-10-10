@@ -106,7 +106,7 @@ export function CustomTypeaheadPlugin({ dialog, cords, post }) {
         console.log(cords)
         return (
           <div
-            className="typeahead-menu-dropdown fixed border-0   text-white  bg-black"
+            className="typeahead-menu-dropdown fixed border-0    text-white  bg-black"
             style={{
               boxShadow:
                 "rgba(255, 255, 255, 0.2) 0px 0px 15px, rgba(255, 255, 255, 0.15) 0px 0px 3px 1px",
@@ -125,7 +125,7 @@ export function CustomTypeaheadPlugin({ dialog, cords, post }) {
                 const isSelected = selectedIndex === index
                 return (
                   <li
-                    className="flex items-center font-bold   "
+                    className="flex items-center font-bold  "
                     key={option.username}
                     style={{
                       padding: "2px",

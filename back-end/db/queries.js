@@ -186,67 +186,72 @@ async function GetPosts(username, clientId, page) {
 }
 
 async function GetPost(postId, clientId) {
-  const post = await prisma.post.findUnique({
-    where: {
-      id: Number(postId),
-    },
-    include: {
-      likedBy: {
-        where: {
-          id: clientId,
-        },
+  try {
+    const post = await prisma.post.findUnique({
+      where: {
+        id: Number(postId),
       },
-      replies: {
-        include: {
-          author: {
-            select: {
-              username: true,
-              avatarUrl: true,
-            },
-          },
-          _count: {
-            select: {
-              replies: true,
-            },
-          },
-          likedBy: true,
-        },
-      },
-      author: {
-        select: {
-          username: true,
-          avatarUrl: true,
-          id: true,
-        },
-      },
-      parent: {
-        include: {
-          likedBy: {
-            where: {
-              id: clientId,
-            },
-          },
-          author: {
-            select: {
-              username: true,
-              avatarUrl: true,
-            },
-          },
-          _count: {
-            select: {
-              replies: true,
-            },
+      include: {
+        likedBy: {
+          where: {
+            id: clientId,
           },
         },
-      },
-      _count: {
-        select: {
-          replies: true,
+        replies: {
+          include: {
+            author: {
+              select: {
+                username: true,
+                avatarUrl: true,
+              },
+            },
+            _count: {
+              select: {
+                replies: true,
+              },
+            },
+            likedBy: true,
+          },
+        },
+        author: {
+          select: {
+            username: true,
+            avatarUrl: true,
+            id: true,
+          },
+        },
+        parent: {
+          include: {
+            likedBy: {
+              where: {
+                id: clientId,
+              },
+            },
+            author: {
+              select: {
+                username: true,
+                avatarUrl: true,
+              },
+            },
+            _count: {
+              select: {
+                replies: true,
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            replies: true,
+          },
         },
       },
-    },
-  })
-  return post
+    })
+    return post
+  } catch (error) {
+    console.log(error)
+    return null
+  }
 }
 
 async function LikePost(postId, userId) {

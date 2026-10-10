@@ -299,11 +299,11 @@ function Post({ dataProp = null, userProp }) {
             <div
               className={`flex-col text-white ${
                 data.parentId || data.replies[1]
-                  ? "pb-250 max-sm:pb-100"
+                  ? "pb-250 max-sm:pb-130"
                   : "pb-0"
               } grow-2  max-w-170 max-h-full border-b-black border border-[#16181C] max-sm:border-black max-sm:border-0`}
             >
-              <div className=" flex font-bold grow text-xl sticky top-0 bg-black/70 backdrop-blur-md gap-7 p-3  ">
+              <div className=" flex font-bold grow text-xl sticky top-0 z-100 bg-black/70 backdrop-blur-md gap-7 p-3  ">
                 <button className="pl-2" onClick={() => navigate(-1)}>
                   <ArrowLeft className="hover:scale-130 transition-transform duration-200" />
                 </button>
@@ -586,9 +586,9 @@ function Post({ dataProp = null, userProp }) {
 
                   <div
                     ref={dialog}
-                    className={`flex-col max-h-250 ${
+                    className={`flex-col max-h-250 max-sm:max-h-130  ${
                       text.length >= 240 && "overflow-y-auto"
-                    } scrollbar-track-gray-950 scrollbar-thumb-gray-800 pr-5  grow pt-3 pb-5`}
+                    } scrollbar-track-gray-950 scrollbar-thumb-gray-800 pr-5  grow pt-3 pb-5 `}
                   >
                     <div
                       className={`relative mb-2  max-h-150 ${
@@ -632,7 +632,7 @@ function Post({ dataProp = null, userProp }) {
                     {imageUrl && (
                       <div className="relative  ">
                         <img
-                          className="bg-center place-self-center bg-cover rounded-2xl "
+                          className="bg-center  bg-cover rounded-2xl  object-cover max-h-170 w-full max-sm:max-h-110 "
                           src={imageUrl}
                         ></img>
                         <button

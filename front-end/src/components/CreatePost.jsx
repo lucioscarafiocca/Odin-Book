@@ -197,7 +197,7 @@ function CreatePost({
             />
 
             <div
-              className={`flex-col max-sm:max-h-100 max-h-250 ${
+              className={`flex-col max-sm:max-h-130  max-h-250 ${
                 text.length >= 240 && "overflow-y-auto"
               } scrollbar-track-gray-950 scrollbar-thumb-gray-800  grow pt-3 pb-5`}
             >
@@ -242,7 +242,7 @@ function CreatePost({
               {imageUrl && (
                 <div className="relative">
                   <img
-                    className="bg-center bg-cover rounded-2xl "
+                    className="bg-center bg-cover object-cover  rounded-2xl max-h-170 w-full max-sm:max-h-110"
                     src={imageUrl}
                   ></img>
                   <button

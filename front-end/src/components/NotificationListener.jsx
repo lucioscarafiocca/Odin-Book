@@ -47,7 +47,7 @@ function NotificationListener() {
   return (
     <>
       <div
-        className={`fixed font-extralight top-11/12 left-6/12    max-sm:top-1/12 max-sm:left-4/12       flex gap-2 rounded-sm pl-5 pr-5 bg-[#1d9bf0] p-3 opacity-100 text-white shadow-lg transition-opacity duration-1000 ease-in-out ${
+        className={`fixed font-extralight top-11/12 left-6/12 z-200  max-sm:opacity-95 max-sm:top-7 max-sm:left-3/12       flex gap-2 rounded-sm pl-5 pr-5 bg-[#1d9bf0] p-3 opacity-100 text-white shadow-lg transition-opacity duration-1000 ease-in-out ${
           postNotification ? "visible" : "hidden"
         } `}
       >
@@ -62,7 +62,7 @@ function NotificationListener() {
         </p>
       </div>
       <div
-        className={`fixed font-extralight top-11/12 left-5/12 max-sm:top-1/12 max-sm:left-3/12  flex gap-2 rounded-sm pl-5 pr-5 bg-red-700 p-3 opacity-100 text-white shadow-lg transition-opacity duration-1000 ease-in-out ${
+        className={`fixed font-extralight top-11/12 left-5/12 max-sm:top-7 z-200 max-sm:left-2/12 max-sm:opacity-95 flex gap-2 rounded-sm pl-5 pr-5 bg-red-700 p-3 opacity-100 text-white shadow-lg transition-opacity duration-1000 ease-in-out ${
           errorNotification ? "visible" : "hidden"
         } `}
       >
