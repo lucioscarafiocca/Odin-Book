@@ -10,13 +10,10 @@ function CreateComment({ isOpen = false, setOpenModal }) {
 
   useEffect(() => {
     if (isOpen) {
-      console.log(isOpen)
       dialog.current.showModal()
     } else {
-      console.log(isOpen)
       dialog.current.close()
     }
-    console.log(isOpen)
   }, [isOpen])
 
   return (

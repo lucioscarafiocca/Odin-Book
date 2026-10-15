@@ -65,7 +65,6 @@ function CreatePost({
     }
   }
   function handleClickOutside(e) {
-    console.log(e.target)
     if (e.target === dialog.current) {
       setOpenModal(false)
     }
@@ -74,7 +73,6 @@ function CreatePost({
     // e.preventDefault()
     attachInterceptor()
     const formData = new FormData()
-    console.log(files)
 
     formData.append("file", files)
     // formData.append("text", text)
@@ -89,7 +87,6 @@ function CreatePost({
       )
       .then((res) => {
         setPublicUrl(res.data)
-        console.log(res)
       })
       .catch((err) => console.log(err))
 
@@ -98,8 +95,6 @@ function CreatePost({
   }
 
   useEffect(() => {
-    console.log(isOpen)
-    console.log(location.pathname.includes(client))
     // function handleClickOutside(event) {
     //   console.log(event)
     //   if (dialog.current && !dialog.current.contains(event.target)) {
@@ -107,11 +102,9 @@ function CreatePost({
     //   }
     // }
     if (isOpen) {
-      console.log(isOpen)
       dialog.current.showModal()
       // document.addEventListener("mousedown", handleClickOutside)
     } else {
-      console.log(isOpen)
       inputRef.current && (inputRef.current.value = "")
       setText("")
       setImageUrl(null)
@@ -131,7 +124,7 @@ function CreatePost({
     const root = $getRoot()
     const selection = $getSelection()
     const anchor = selection.anchor
-    console.log(root)
+
     if (root.isEmpty() || anchor.offset === 1) {
       const paragraph = $createParagraphNode()
       const textNode = $createTextNode("  ")
@@ -142,8 +135,7 @@ function CreatePost({
 
   function initialEditorState() {
     const root = $getRoot()
-    console.log("asd")
-    console.log(root.isEmpty())
+
     if (root.isEmpty()) {
       const paragraph = $createParagraphNode()
       root.append(paragraph)
@@ -173,10 +165,9 @@ function CreatePost({
 
   return (
     <>
-      {console.log(data)}
       <dialog
         onClick={(e) => handleClickOutside(e)}
-        className={`overflow-visible w-150  backdrop:bg-black/60    max-sm:left-5 max-sm:top-20      flex-col relative top-10 text-white  bg-[#141414] left-[38%] rounded-2xl open:starting:scale-75  open:starting:opacity-0  open:flex ${
+        className={`overflow-visible w-150  backdrop:bg-black/60    max-sm:left-5 max-sm:top-20   flex-col relative top-10 text-white  bg-[#141414] left-[38%] rounded-2xl open:starting:scale-75  open:starting:opacity-0  open:flex ${
           isOpen ? "opacity-100 scale-100" : "opacity-0 scale-75"
         }  transition-all duration-300 post-dialog`}
         ref={dialog}
@@ -227,7 +218,7 @@ function CreatePost({
                     onChange={(editorState) => {
                       editorState.read(() => {
                         const text = $getRoot().getTextContent()
-                        console.log(text.length)
+
                         setText(text)
                       })
                     }}
@@ -242,7 +233,7 @@ function CreatePost({
               {imageUrl && (
                 <div className="relative">
                   <img
-                    className="bg-center bg-cover object-cover  rounded-2xl max-h-170 w-full max-sm:max-h-110"
+                    className="bg-center bg-cover object-cover  rounded-2xl max-h-170 w-full max-sm:max-h-110 "
                     src={imageUrl}
                   ></img>
                   <button

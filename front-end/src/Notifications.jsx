@@ -34,7 +34,6 @@ function Notifications() {
         setUsers(res.data.users)
         setSearch(name)
         // res.data[0] ? setUsers(res.data.users) : setUsers(["no user found"])
-        console.log(res)
       })
     } else {
       setUsers(undefined)
@@ -47,7 +46,6 @@ function Notifications() {
   }
 
   function handleLike(postId) {
-    console.log(data)
     const newPosts = data.map((element) => {
       return element.postId == postId
         ? element.post.likedBy.length == 1
@@ -69,7 +67,7 @@ function Notifications() {
             }
         : element
     })
-    console.log(newPosts)
+
     setData(newPosts)
     socket.emit("likedpost", postId)
   }
@@ -77,17 +75,15 @@ function Notifications() {
   useEffect(() => {
     // const data = location.state
     socket.emit("getNotifications", (response) => {
-      console.log(response)
       setData(response.data.fullNotifications)
       setUser(response.data.user)
     })
     socket.on("connect_error", (err) => {
-      console.log(err)
       navigate("/")
     })
     // setData(data)
   }, [])
-  console.log(data[0])
+
   return (
     <>
       {data ? (
@@ -97,12 +93,12 @@ function Notifications() {
               data={{
                 picture: user.avatarUrl.data.publicUrl,
                 username: user.username,
-                receivedNotifications: user.receivedNotifications,
+                receivedNotifications: [],
               }}
               setLoading={setLoading}
             ></Sidebar>
           )}
-          <div className=" border   border-[#16181C] flex-col max-sm:border-black max-sm:border-0 text-white grow  max-h-full">
+          <div className=" border   border-[#16181C] flex-col max-sm:border-black z-100 max-sm:border-0 text-white grow  max-h-full">
             <div className=" flex font-bold grow text-2xl sticky top-0 bg-black/70 backdrop-blur-md gap-7 p-3  ">
               <button className="pl-2" onClick={() => navigate(-1)}>
                 <ArrowLeft className="hover:scale-130 transition-transform duration-200" />
@@ -138,7 +134,7 @@ function Notifications() {
             data={{
               picture: user.avatarUrl.data.publicUrl,
               username: user.username,
-              receivedNotifications: user.receivedNotifications,
+              receivedNotifications: [],
             }}
             setLoading={setLoading}
           ></Footer>

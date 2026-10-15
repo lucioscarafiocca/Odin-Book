@@ -1,46 +1,56 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link, useLocation } from "react-router"
 import socket from "../socket"
 import CreatePost from "./CreatePost"
 import { logOut } from "../jwtlib"
 import NotificationListener from "./NotificationListener"
-import { House, User, Bell, Circle } from "lucide-react"
+import { House, User, Bell, Circle, Ellipsis, LogOut } from "lucide-react"
 
 function Sidebar({ data, setLoading }) {
   const [openModal, setOpenModal] = useState(false)
   const [notification, setNotification] = useState()
+  const [logOutMenu, setLogOutMenu] = useState(false)
   const location = useLocation()
+  const logOutMenuRef = useRef(null)
+
+  function handleClickOutside(e) {
+    if (logOutMenuRef.current && !logOutMenuRef.current.contains(e.target)) {
+      setLogOutMenu(false)
+    }
+  }
+
   useEffect(() => {
-    console.log(data)
-    // socket.emit("data")
-    !notification && setNotification(data.receivedNotifications.length)
-    socket.on("newNotification", (data) => {
-      console.log(notification)
+    const handleNewNotification = (data) => {
       setNotification((prevNotification) => {
         return prevNotification + 1
       })
-      console.log(data)
-    })
-    socket.on("removeNotification", (data) => {
+    }
+    const handleRemoveNotification = (data) => {
       setNotification((prevNotification) => {
-        return prevNotification - 1
+        return prevNotification - 1 > -1 && prevNotification - 1
       })
-      console.log(data)
-    })
-    socket.on("cleanNotifications", (data) => {
+    }
+    const handleCleanNotifications = (data) => {
       setNotification(0)
-    })
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+
+    !notification && setNotification(data.receivedNotifications.length)
+    socket.on("newNotification", handleNewNotification)
+    socket.on("removeNotification", handleRemoveNotification)
+    socket.on("cleanNotification", handleCleanNotifications)
 
     return () => {
-      socket.off("newNotification")
-      socket.off("removeNotification")
-      socket.off("cleanNotifications")
+      document.removeEventListener("mousedown", handleClickOutside)
+      socket.off("newNotification", handleNewNotification)
+      socket.off("removeNotification", handleRemoveNotification)
+      socket.off("cleanNotification", handleCleanNotifications)
     }
   }, [])
-  console.log(data)
+
   return (
     <>
-      <div className=" flex max-sm:hidden  flex-col items-end  grow-2 p-5 mr-6 h-dvh justify-between  text-white">
+      <div className=" flex max-sm:hidden  relative flex-col items-end  grow-2 p-5 mr-6 h-dvh justify-between  text-white">
         <div className="flex fixed gap-1  m  flex-col ">
           <Link
             className={`flex gap-4 ${
@@ -164,7 +174,7 @@ function Sidebar({ data, setLoading }) {
             sidebar={true}
           ></CreatePost>
 
-          <button
+          {/* <button
             onClick={() => {
               logOut()
               window.location.reload()
@@ -172,7 +182,39 @@ function Sidebar({ data, setLoading }) {
             className="bg-white text-xl  text-black mt-5 ml-3 outline-0 rounded-full p-2.5 font-bold pl-10 pr-10 hover:bg-white/90 transition-opacity"
           >
             Log Out
-          </button>
+          </button> */}
+        </div>
+
+        <div
+          onClick={(e) => setLogOutMenu(true)}
+          className="flex  fixed bottom-5 items-center rounded-full "
+          ref={logOutMenuRef}
+        >
+          <div
+            onClick={() => {
+              logOut()
+              window.location.reload()
+            }}
+            className={`absolute flex gap-4 rounded-md hover:bg-white/10 hover:border-white/20 border-black border -top-13 w-full transition-all duration-200 p-3 ${
+              !logOutMenu && "hidden"
+            }`}
+            style={{
+              boxShadow:
+                "rgba(255, 255, 255, 0.2) 0px 0px 15px, rgba(255, 255, 255, 0.15) 0px 0px 3px 1px",
+            }}
+          >
+            <LogOut color="white" />
+            Log Out
+          </div>
+          <div className="hover:bg-white/10  flex items-center rounded-full transition-colors duration-200">
+            <img
+              className="max-h-10 rounded-full m-2  ml-4 mr-4 mt-2.5 aspect-square object-cover"
+              src={data.picture}
+              alt=""
+            />
+            <p className="font-bold pr-10  text-xl">{data.username}</p>
+            <Ellipsis className="ml-4 mr-4" />
+          </div>
         </div>
       </div>
     </>

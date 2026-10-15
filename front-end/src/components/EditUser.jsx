@@ -14,14 +14,12 @@ function EditUser({ isOpen = false, setOpenModal, data, setEditData }) {
   const [picture, setPicture] = useState()
 
   function handleClickOutside(e) {
-    console.log(e.target)
     if (e.target === dialog.current) {
       setOpenModal(false)
     }
   }
   function handleSave() {
-    console.log(status)
-    if (username || status || status == "" || files) {
+    if (username || status || status == "" || picture) {
       socket.emit(
         "userSave",
         username || data.username,
@@ -45,7 +43,7 @@ function EditUser({ isOpen = false, setOpenModal, data, setEditData }) {
     setFile(file)
     const url = URL.createObjectURL(file)
     setPicture(url)
-    console.log(url)
+
     axios
       .post(
         import.meta.env.VITE_API_URL
@@ -59,10 +57,8 @@ function EditUser({ isOpen = false, setOpenModal, data, setEditData }) {
 
   useEffect(() => {
     if (isOpen) {
-      console.log(isOpen)
       dialog.current.showModal()
     } else {
-      console.log(isOpen)
       setTimeout(() => {
         dialog.current.close()
       }, 200)
@@ -99,7 +95,10 @@ function EditUser({ isOpen = false, setOpenModal, data, setEditData }) {
               className={` text-black mr-3  rounded-full p-1  pl-10 pr-10 hover:bg-white/80 ${
                 status && status.length > 240 ? "bg-white/30" : "bg-white"
               } transition-all duration-150"`}
-              onClick={() => status && status.length < 240 && handleSave()}
+              onClick={() =>
+                ((status && status.length < 240) || status == "") &&
+                handleSave()
+              }
             >
               Save
             </button>

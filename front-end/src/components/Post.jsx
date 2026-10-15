@@ -68,7 +68,7 @@ function Post({ dataProp = null, userProp }) {
     const currentDate = new Date()
     const date = new Date(timestamp)
     const result = Math.floor((currentDate - date) / (1000 * 60 * 60))
-    console.log(result)
+
     return result > 24
       ? date.getDate() +
           " " +
@@ -91,7 +91,6 @@ function Post({ dataProp = null, userProp }) {
         setUsers(res.data.users)
         setSearch(name)
         // res.data[0] ? setUsers(res.data.users) : setUsers(["no user found"])
-        console.log(res)
       })
     } else {
       setUsers(undefined)
@@ -159,7 +158,7 @@ function Post({ dataProp = null, userProp }) {
     socket.emit("createComment", text, postId, publicUrl, (data) => {
       setImageUrl(null)
       setPublicUrl(null)
-      console.log(data)
+
       data != "error" && setLoading(true)
     })
   }
@@ -178,7 +177,6 @@ function Post({ dataProp = null, userProp }) {
     // e.preventDefault()
     attachInterceptor()
     const formData = new FormData()
-    console.log(files)
 
     formData.append("file", files)
     // formData.append("text", text)
@@ -196,15 +194,12 @@ function Post({ dataProp = null, userProp }) {
 
     const url = URL.createObjectURL(files)
     setImageUrl(url)
-    console.log(url)
   }
 
   function handleCommentLink(postId, username) {
     navigate(`/${username}/status/${postId}`)
   }
-  function onError(error) {
-    console.log(error)
-  }
+  function onError(error) {}
 
   const myEditorTheme = {
     text: {
@@ -245,14 +240,12 @@ function Post({ dataProp = null, userProp }) {
           setClient(res.client)
         }
         setLoading(false)
-        console.log(res)
       })
     }
     // socket.on("commentSuccess", (data) => {
-    //   console.log(data)
+    //
     // })
     socket.on("connect_error", (err) => {
-      console.log(err)
       navigate("/")
     })
 
@@ -263,7 +256,6 @@ function Post({ dataProp = null, userProp }) {
 
   return (
     <>
-      {console.log(data)}
       {loading ? (
         <div
           className="h-lvh bg-black flex  items-center justify-center grow  "
@@ -588,7 +580,7 @@ function Post({ dataProp = null, userProp }) {
                     ref={dialog}
                     className={`flex-col max-h-250 max-sm:max-h-130  ${
                       text.length >= 240 && "overflow-y-auto"
-                    } scrollbar-track-gray-950 scrollbar-thumb-gray-800 pr-5  grow pt-3 pb-5 `}
+                    } scrollbar-track-gray-950 scrollbar-thumb-gray-800 pr-5  grow pt-3 pb-5 max-sm:pb-0 `}
                   >
                     <div
                       className={`relative mb-2  max-h-150 ${
@@ -614,7 +606,7 @@ function Post({ dataProp = null, userProp }) {
                           onChange={(editorState) => {
                             editorState.read(() => {
                               const text = $getRoot().getTextContent()
-                              console.log(text.length)
+
                               setText(text)
                             })
                           }}

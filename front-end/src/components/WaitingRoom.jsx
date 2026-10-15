@@ -7,32 +7,30 @@ function WaitingRoom() {
 
   function handleasd() {
     const code = params.get("code")
-    console.log(code)
+
     axios
       .get(`http://localhost:3000/auth/github/callback?code=${code}`, {
         withCredentials: true,
       })
       .then((response) => {
         navigate("/")
-        console.log(response)
       })
-      .catch((error) => {
-        console.log(error)
-      })
+      .catch((error) => {})
   }
-  // useEffect(() => {
-  //   const code = params.get("code")
-  //   console.log(code)
-  //   axios
-  //     .get(`http://localhost:3000/auth/github/callback?code=${code}`)
-  //     .then((response) => {
-  //       navigate("/")
-  //       console.log(response)
-  //     })
-  //     .catch((error) => {
-  //       console.log(error)
-  //     })
-  // }, [])
+
+  useEffect(() => {
+    const code = params.get("code")
+
+    axios
+      .get(
+        `${import.meta.env.VITE_URL}/auth/auth/github/callback?code=${code}` ||
+          `http://localhost:3000/auth/github/callback?code=${code}`
+      )
+      .then((response) => {
+        navigate("/")
+      })
+      .catch((error) => {})
+  }, [])
 
   return (
     <>

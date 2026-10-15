@@ -21,8 +21,6 @@ const validateUser = [
     .withMessage(`Name ${lengthErr}`)
     .custom(async (value) => {
       let nameCheck = await db.GetUserByName(value)
-      console.log(value)
-      console.log(nameCheck)
       if (nameCheck == null) {
         return true
       } else {
@@ -150,19 +148,17 @@ async function storeFilePost(req, res) {
   const fileBase64 = decode(file.buffer.toString("base64"))
   const bucket = await supabase.storage.from("AvatarUrls")
   const splice = file.mimetype.slice(6)
-  console.log(file)
 
   const response = await bucket.upload(id + "." + splice, fileBase64, {
     upsert: true,
   })
   const image = await db.UpdateUserImage(id, id + "." + splice)
-  console.log(response)
+
   res.json("success")
 }
 async function storeFilesPost(req, res) {
   const file = req.file
 
-  console.log(file)
   const fileBase64 = decode(file.buffer.toString("base64"))
   const bucket = await supabase.storage.from("PostImages")
   const id = randomUUID()
@@ -172,7 +168,6 @@ async function storeFilesPost(req, res) {
   })
   const { data, error } = bucket.getPublicUrl(id)
 
-  console.log(data.publicUrl)
   res.json(data.publicUrl)
 }
 export default {

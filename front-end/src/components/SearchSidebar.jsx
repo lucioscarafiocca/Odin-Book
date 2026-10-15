@@ -14,14 +14,11 @@ function SearchSidebar() {
 
   useEffect(() => {
     socket.emit("suggestion", (res) => {
-      console.log(res)
       setData(res.data)
       setClient(res.client)
     })
     const handleClickOutside = (event) => {
-      console.log(event)
       if (menuRef.current && !menuRef.current.contains(event.target)) {
-        console.log("asdasdasd")
         setUsers(null)
       }
     }
@@ -41,14 +38,13 @@ function SearchSidebar() {
           : { ...element, followers: [] }
         : element
     })
-    console.log(newUsers)
+
     setData(newUsers)
 
     socket.emit("follow", id)
   }
 
   function handleSearch(name) {
-    console.log(name !== "")
     if (name !== "") {
       socket.emit(
         "searchUser",
@@ -60,7 +56,6 @@ function SearchSidebar() {
           setUsers(res.data.fullUsers)
           setSearch(name)
           // res.data[0] ? setUsers(res.data.users) : setUsers(["no user found"])
-          console.log(res)
         }
       )
     } else {

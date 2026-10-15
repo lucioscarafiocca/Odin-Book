@@ -34,7 +34,6 @@ function Signup() {
         }
       )
       .then((response) => {
-        console.log(response)
         setLocalStorage(response.data)
         window.location.reload()
       })
@@ -56,7 +55,7 @@ function Signup() {
               errors.splice(errors.indexOf("email"), 1)
             }
           })
-          console.log(errors)
+
           errors.forEach((element) => {
             element == "password"
               ? setPasswordError(null)
@@ -66,15 +65,12 @@ function Signup() {
               ? setEmailError(null)
               : null
           })
-          console.log(error.response.data.errors)
         }
-        console.log(error.response)
       })
   }
 
   useEffect(() => {
     socket.on("connect", () => {
-      console.log(socket.id)
       // setIsConnected(true)
       navigate("/home")
     })
@@ -82,7 +78,7 @@ function Signup() {
   return (
     <>
       <div className="h-lvh  flex-col p-4  bg-black  text-white flex  items-center ">
-        <div className="flex-col w-130 grow-2 flex mt-30 justify-center ">
+        <div className="flex-col w-130 max-sm:w-full grow-2 flex  justify-start mt-20 ">
           <div className="flex pb-10 gap-8">
             <button onClick={() => navigate(-1)}>
               <ArrowLeft className="hover:scale-130 transition-transform duration-200" />
@@ -101,8 +97,9 @@ function Signup() {
               <label className="relative  flex flex-col   " htmlFor="username">
                 <input
                   className={`bg-white peer outline-0 ${
-                    usernameError && "border-red-500 hover:border-red-500"
-                  }  border-2 border-gray-900/60 pr-6 align-text-bottom rounded-md  pl-3 text-md pt-4 pb-1  text-black hover:border-gray-800/30 transition-colors duration-200`}
+                    usernameError &&
+                    "border-red-500 hover:border-red-500 focus:border-red-500"
+                  }  border-2 border-gray-900/60 pr-6 align-text-bottom rounded-md  pl-3 text-md  pt-4 pb-1  text-black hover:border-[#1d9bf0] focus:border-[#1d9bf0] transition-colors duration-200`}
                   onChange={(e) =>
                     setUserData({ ...userData, username: e.target.value })
                   }
@@ -113,8 +110,8 @@ function Signup() {
                 />
                 <div
                   className={`absolute pointer-events-none  ${
-                    usernameError && "text-red-500"
-                  } left-3.5 top-[0.7em]  peer-focus:translate-y-[-0.4em] peer-focus:scale-75  origin-top-left  peer-not-placeholder-shown:scale-75   peer-not-placeholder-shown:translate-y-[-0.4em] transition-transform text-gray-400/70`}
+                    usernameError && "text-red-500 peer-focus:text-red-500"
+                  } left-3.5 top-[0.7em]  peer-focus:translate-y-[-0.4em] peer-focus:scale-75 peer-focus:text-[#1d9bf0] origin-top-left  peer-not-placeholder-shown:scale-75   peer-not-placeholder-shown:translate-y-[-0.4em] transition-transform text-gray-400/70`}
                 >
                   Username
                 </div>
@@ -130,8 +127,9 @@ function Signup() {
               <label className="relative flex flex-col " htmlFor="email">
                 <input
                   className={`bg-white peer outline-0 ${
-                    emailError && "border-red-500 hover:border-red-500"
-                  } border-2  pr-6 align-text-bottom rounded-md pl-3 text-md pt-4 pb-1  text-black hover:border-gray-800/30  transition-colors duration-200`}
+                    emailError &&
+                    "border-red-500 hover:border-red-500 focus:border-red-500 "
+                  } border-2 border-gray-900/60 pr-6 align-text-bottom rounded-md pl-3 text-md pt-4 pb-1  text-black hover:border-[#1d9bf0] focus:border-[#1d9bf0]  transition-colors duration-200`}
                   onChange={(e) =>
                     setUserData({ ...userData, email: e.target.value })
                   }
@@ -143,8 +141,8 @@ function Signup() {
                 />
                 <div
                   className={`absolute pointer-events-none  ${
-                    emailError && "text-red-500"
-                  }  left-3.5 top-[0.7em]  peer-focus:translate-y-[-0.4em] peer-focus:scale-75  origin-top-left  peer-not-placeholder-shown:scale-75   peer-not-placeholder-shown:translate-y-[-0.4em] transition-transform text-gray-400/70`}
+                    emailError && "text-red-500 peer-focus:text-red-500 "
+                  }  left-3.5 top-[0.7em]  peer-focus:translate-y-[-0.4em] peer-focus:text-[#1d9bf0] peer-focus:scale-75  origin-top-left  peer-not-placeholder-shown:scale-75   peer-not-placeholder-shown:translate-y-[-0.4em] transition-transform text-gray-400/70`}
                 >
                   Email
                 </div>
@@ -161,8 +159,9 @@ function Signup() {
               <label className="relative flex flex-col " htmlFor="password">
                 <input
                   className={`bg-white peer outline-0  ${
-                    passwordError && "border-red-500 hover:border-red-500"
-                  } border-2 border-gray-400/20 pr-6 align-text-bottom rounded-md  text-md pl-3 pt-4 pb-1  text-black hover:border-gray-800/30 transition-colors duration-200`}
+                    passwordError &&
+                    "border-red-500 hover:border-red-500   focus:border-red-500"
+                  } border-2   border-gray-900/60 pr-6 align-text-bottom rounded-md  text-md pl-3 pt-4 pb-1  text-black hover:border-[#1d9bf0] focus:border-[#1d9bf0]  transition-colors duration-200`}
                   onChange={(e) =>
                     setUserData({ ...userData, password: e.target.value })
                   }
@@ -193,8 +192,8 @@ function Signup() {
 
                 <div
                   className={`absolute pointer-events-none  ${
-                    passwordError && "text-red-500"
-                  } left-3.5 top-[0.7em]  peer-focus:translate-y-[-0.4em] peer-focus:scale-75  origin-top-left  peer-not-placeholder-shown:scale-75   peer-not-placeholder-shown:translate-y-[-0.4em] transition-transform text-gray-400/70`}
+                    passwordError && "text-red-500 peer-focus:text-red-500"
+                  } left-3.5 top-[0.7em]  peer-focus:translate-y-[-0.4em] peer-focus:scale-75 peer-focus:text-[#1d9bf0] origin-top-left  peer-not-placeholder-shown:scale-75   peer-not-placeholder-shown:translate-y-[-0.4em] transition-transform text-gray-400/70`}
                 >
                   Password
                 </div>
@@ -207,7 +206,7 @@ function Signup() {
               )}
             </div>
 
-            <button className="bg-blue-700 mt-5  rounded-full p-2 pl-10 pr-10 hover:bg-blue-700/70 transition-opacity">
+            <button className="bg-blue-700 mt-5  rounded-full p-2 pl-10 pr-10 hover:bg-blue-700/70 transition-all duration-200">
               Sign up
             </button>
           </form>

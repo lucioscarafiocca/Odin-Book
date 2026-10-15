@@ -13,24 +13,24 @@ function Footer({ data, setLoading }) {
   const [isVisible, setIsVisible] = useState(true)
   const location = useLocation()
   useEffect(() => {
-    // socket.emit("data")
-    !notification && setNotification(data.receivedNotifications.length)
-    socket.on("newNotification", (data) => {
-      console.log(notification)
+    const handleNewNotification = (data) => {
       setNotification((prevNotification) => {
         return prevNotification + 1
       })
-      console.log(data)
-    })
-    socket.on("removeNotification", (data) => {
+    }
+    const handleRemoveNotification = (data) => {
       setNotification((prevNotification) => {
-        return prevNotification - 1
+        return prevNotification - 1 > -1 && prevNotification - 1
       })
-      console.log(data)
-    })
-    socket.on("cleanNotifications", (data) => {
+    }
+    const handleCleanNotifications = (data) => {
       setNotification(0)
-    })
+    }
+    // socket.emit("data")
+    !notification && setNotification(data.receivedNotifications.length)
+    socket.on("newNotification", handleNewNotification)
+    socket.on("removeNotification", handleRemoveNotification)
+    socket.on("cleanNotifications", handleCleanNotifications)
     const handleScroll = () => {
       const currentScrollY = window.scrollY
 
@@ -39,8 +39,6 @@ function Footer({ data, setLoading }) {
         setLastScrollY(currentScrollY)
         return
       }
-      console.log(lastScrollY)
-      console.log(currentScrollY)
 
       if (currentScrollY > lastScrollY) {
         setIsVisible(false) // Scrolling down
@@ -53,12 +51,12 @@ function Footer({ data, setLoading }) {
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => {
       window.removeEventListener("scroll", handleScroll)
-      socket.off("notification")
-      socket.off("removeNotification")
-      socket.off("cleanNotifications")
+      socket.off("newNotification", handleNewNotification)
+      socket.off("removeNotification", handleRemoveNotification)
+      socket.off("cleanNotifications", handleCleanNotifications)
     }
   }, [lastScrollY])
-  console.log(data)
+
   return (
     <>
       <div

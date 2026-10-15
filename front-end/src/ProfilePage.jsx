@@ -9,7 +9,14 @@ import { useRef } from "react"
 import { useWindowVirtualizer } from "@tanstack/react-virtual"
 import SearchSidebar from "./components/SearchSidebar"
 import { useInView } from "react-intersection-observer"
-import { Heart, MessageCircle, Repeat, Trash, CalendarDays } from "lucide-react"
+import {
+  Heart,
+  MessageCircle,
+  Repeat,
+  Trash,
+  CalendarDays,
+  ArrowLeft,
+} from "lucide-react"
 import NotificationListener from "./components/NotificationListener"
 import Footer from "./components/Footer"
 
@@ -90,7 +97,7 @@ function ProfilePage() {
     const currentDate = new Date()
     const date = new Date(timestamp)
     const result = Math.floor((currentDate - date) / (1000 * 60 * 60))
-    console.log(result)
+
     return result > 24
       ? date.getDate() +
           " " +
@@ -104,7 +111,6 @@ function ProfilePage() {
   }
 
   function handleMorePosts(key) {
-    console.log(page)
     const prevPage = page
     const replies = location.pathname.includes("/with_replies")
     const { username } = params
@@ -112,9 +118,7 @@ function ProfilePage() {
       setLoadingPosts(true)
       setPage((prevPage) => prevPage + 1)
       socket.emit("userpost", username, replies, page + 1, (res) => {
-        console.log(res)
         if (res.status == "ok") {
-          console.log(posts)
           setLoadingPosts(false)
           setPosts([...posts, ...res.data.posts])
         } else {
@@ -129,7 +133,6 @@ function ProfilePage() {
         setUsers(res.data.users)
         setSearch(name)
         // res.data[0] ? setUsers(res.data.users) : setUsers(["no user found"])
-        console.log(res)
       })
     } else {
       setUsers(undefined)
@@ -143,18 +146,15 @@ function ProfilePage() {
 
     socket.emit("follow", user.id)
   }
-  console.log(posts)
 
   useEffect(() => {
     const replies = location.pathname.includes("/with_replies")
     const { username } = params
-    console.log(morePosts)
+
     if (morePosts && !loadingPosts && !replies) {
       setLoadingPosts(true)
       socket.emit("userpost", username, replies, 0, (res) => {
-        console.log(res)
         if (res.status == "ok") {
-          console.log(posts)
           setUser(res.data.user)
           setClient(res.data.client)
           setImage(res.data.picture)
@@ -194,9 +194,7 @@ function ProfilePage() {
     } else if (user && username != user.username) {
       setLoading(true)
       socket.emit("userpost", username, replies, 0, (res) => {
-        console.log(res)
         if (res.status == "ok") {
-          console.log(posts)
           setUser(res.data.user)
           setClient(res.data.client)
           setImage(res.data.picture)
@@ -213,13 +211,11 @@ function ProfilePage() {
       })
     }
     socket.on("connect_error", (err) => {
-      console.log(err)
       navigate("/")
     })
   }, [params, location, loading, morePosts])
 
   function handleLike(postId) {
-    console.log(user.username)
     const newPosts = posts.map((element) => {
       return element.id == postId
         ? element.likedBy[0]
@@ -279,9 +275,14 @@ function ProfilePage() {
         </p>
       ) : (
         <div className=" grow max-w-170">
-          {/* {console.log(donePages)} */}
+          <div className=" flex font-bold grow text-2xl sticky top-0 z-100 bg-black/70 backdrop-blur-md gap-7 p-3  ">
+            <button className="pl-2" onClick={() => navigate(-1)}>
+              <ArrowLeft className="hover:scale-130 transition-transform duration-200" />
+            </button>
+            {user.username}
+          </div>
+
           <div className="text-white border  border-[#16181C]">
-            {console.log(editData)}
             <div
               className="relative p-1 "
               style={{
@@ -321,7 +322,7 @@ function ProfilePage() {
                 )}
               </div>
               <div className="pl-3 pb-1 pt-2">
-                {editData.status || user.status || "no status"}
+                {editData.status || user.status}
               </div>
 
               <div className="text-[#71767b] gap-1 flex pl-3">
@@ -400,9 +401,7 @@ function ProfilePage() {
             >
               {rowVirtualizer.getVirtualItems().map((virtualItem) => {
                 const element = posts[virtualItem.index]
-                // console.log(element)
-                // console.log(posts.length)
-                // console.log(virtualItem.index)
+
                 return (
                   <div
                     className=" box-border "
@@ -431,7 +430,6 @@ function ProfilePage() {
                         //   setMorePosts(true)
                         // }}
                       >
-                        {console.log(entry)}
                         {inView ? handleMorePosts(virtualItem.index) : "asdasd"}
                       </div>
                     ) : element == undefined ? null : (

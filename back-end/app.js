@@ -50,8 +50,8 @@ passport.serializeUser(function (user, done) {
 })
 
 passport.deserializeUser(async function (id, done) {
-  // console.log("obj")
-  // console.log(obj)
+  //
+  //
   try {
     const user = await db.GetUser(id)
     if (user) {
@@ -69,15 +69,16 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "http://127.0.0.1:5173/auth",
+      callbackURL:
+        `${process.env.FRONTEND_URL}/auth` || "http://127.0.0.1:5173/auth",
     },
     async function (accessToken, refreshToken, profile, done) {
       process.nextTick(async function () {
         const user = await db.FindOrCreate(profile)
-        //  console.log(user)
+        //
         return done(null, user)
 
-        // console.log(user)
+        //
         // return done(null, user)
       })
     }
@@ -128,7 +129,7 @@ io.engine.use(onlyForHandshake(passport.session()))
 
 // io.engine.use(
 //   onlyForHandshake((req, res, next) => {
-//     console.log(req.user)
+//
 //     if (req.user) {
 //       next()
 //     } else {
@@ -150,12 +151,12 @@ io.engine.use((req, res, next) => {
 io.on("connection", (socket) => {
   io.emit("connection")
   socket.join(socket.request.user.id)
-  // console.log(socket.id)
-  // console.log(socket.request.user)
-  // console.log("asdasd")
+  //
+  //
+  //
 
   // socket.on("code", (code) => {
-  //   console.log(code)
+  //
   //   // const url = `https://github.com/login/oauth/access_token?client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&code=${code}`
   //   const response = fetch("https://github.com/login/oauth/access_token", {
   //     method: "POST",
@@ -177,10 +178,10 @@ io.on("connection", (socket) => {
   //       }
   //     })
   //     .then((response) => {
-  //       console.log(response)
+  //
   //     })
   //     .catch((error) => {
-  //       console.log("error is " + error)
+  //
   //     })
   // })
   socket.on("login", (email, password, callback) => {
@@ -189,7 +190,7 @@ io.on("connection", (socket) => {
   socket.on("data", async (cursor, callback) => {
     const user = socket.request.user
     const bucket = await supabase.storage.from("AvatarUrls")
-    console.log(user.receivedNotifications.post)
+
     const { data, error } = user.avatarUrl
       ? bucket.getPublicUrl(user.avatarUrl)
       : bucket.getPublicUrl("default-user-pic.jpg")
@@ -198,19 +199,18 @@ io.on("connection", (socket) => {
         ? await db.SearchHomepagePostsTop(user.id, cursor.cursor)
         : await db.SearchHomepagePostsBottom(user.id, cursor.cursor)
     const posts = postsNoImg.map((element) => {
-      console.log(element)
       const { data, error } = element.avatarUrl
         ? bucket.getPublicUrl(element.avatarUrl)
         : bucket.getPublicUrl("default-user-pic.jpg")
       return { ...element, avatarUrl: data.publicUrl }
     })
-    // console.log(posts)
+    //
     callback({
       status: "ok",
       data: { user, posts, picture: data.publicUrl },
     })
-    // console.log(socket.id)
-    // console.log(socket.request.user)
+    //
+    //
   })
   socket.on("userpost", async (username, replies, page, callback) => {
     const clientId = socket.request.user.id
@@ -221,12 +221,10 @@ io.on("connection", (socket) => {
     const user = await db.GetUserByName(username, clientId)
     const bucket = supabase.storage.from("AvatarUrls")
     if (user) {
-      console.log(user)
       const { data, error } = user.avatarUrl
         ? bucket.getPublicUrl(user.avatarUrl)
         : bucket.getPublicUrl("default-user-pic.jpg")
 
-      console.log(clientId)
       callback({
         status: "ok",
         data: {
@@ -257,9 +255,6 @@ io.on("connection", (socket) => {
         },
       })
     }
-    // console.log(posts)
-    // console.log(socket.id)
-    // console.log(socket.request.user)
   })
   socket.on("createPost", async (text, postId, publicUrl) => {
     const userId = socket.request.user.id
@@ -267,7 +262,6 @@ io.on("connection", (socket) => {
     if (text.length < 240) {
       const post = await controller.createPost(text, userId, postId, publicUrl)
       if (post) {
-        console.log(post)
         const mentionMatch = text.match(/(?:^|\s)(@[^\s]+)/g)
         mentionMatch &&
           mentionMatch.forEach(async (element) => {
@@ -279,7 +273,7 @@ io.on("connection", (socket) => {
                 socket.to(match.id).emit("newNotification", "youve got mail")
             }
           })
-        console.log(post)
+
         socket.emit(
           "postNotification",
           post && { username: username, id: post.id }
@@ -312,14 +306,12 @@ io.on("connection", (socket) => {
             .to(matchId.authorId)
             .emit("removeNotification", "youve got like")
       }
-      console.log(post)
     } else {
       const post = await db.LikePost(postId, userId)
       if (matchId.authorId != userId) {
         await db.CreateNotifications("like", postId, userId, matchId.authorId)
         connected &&
           socket.to(matchId.authorId).emit("newNotification", "youve got like")
-        console.log(post)
       }
     }
   })
@@ -340,7 +332,7 @@ io.on("connection", (socket) => {
       const { data, error } = post.author.avatarUrl
         ? bucket.getPublicUrl(post.author.avatarUrl)
         : bucket.getPublicUrl("default-user-pic.jpg")
-      console.log(post)
+
       if (post.parent) {
         callback({
           status: "ok",
@@ -457,7 +449,7 @@ io.on("connection", (socket) => {
   })
   socket.on("searchUser", async (name, callback) => {
     const username = socket.request.user.id
-    console.log(username)
+
     const users = await db.GetUsersByName(name, username)
     const bucket = supabase.storage.from("AvatarUrls")
     const fullUsers = users.map((element) => {
@@ -466,7 +458,7 @@ io.on("connection", (socket) => {
         : bucket.getPublicUrl("default-user-pic.jpg")
       return { ...element, avatarUrl: data.publicUrl }
     })
-    console.log(users)
+
     callback({
       status: "ok",
       data: {
@@ -483,13 +475,10 @@ io.on("connection", (socket) => {
       const follow = await db.UnfollowUser(follows.id)
       await db.RemoveNotification("follow", null, userId, id)
       connected && socket.to(id).emit("removeNotification", "youve got follow")
-      console.log(follow)
     } else if (id !== userId) {
       const follow = await db.FollowUser(id, userId)
       await db.CreateNotifications("follow", null, userId, id)
       connected && socket.to(id).emit("newNotification", "youve got follow")
-
-      console.log(follow)
     }
   })
   socket.on("follows", async (following, username, callback) => {
@@ -505,7 +494,7 @@ io.on("connection", (socket) => {
         : bucket.getPublicUrl("default-user-pic.jpg")
       fullres.push({ ...element, avatarUrl: data.publicUrl })
     })
-    console.log(socket.request.user)
+
     callback({
       status: "ok",
       data: {
@@ -523,7 +512,6 @@ io.on("connection", (socket) => {
   socket.on("userSave", async (username, status) => {
     const userId = socket.request.user.id
     const user = await db.UpdateUser(username, status, userId)
-    console.log(user)
   })
   socket.on("searchData", async (search, page, callback) => {
     const userId = socket.request.user.id
@@ -531,7 +519,7 @@ io.on("connection", (socket) => {
       search == false ? [] : await db.SearchPosts(search, userId, page)
     const suggestions = search == false ? await db.GetSuggestions(userId) : []
     const bucket = supabase.storage.from("AvatarUrls")
-    console.log(data)
+
     const fullData = data.map((element) => {
       const { data, error } = element.author.avatarUrl
         ? bucket.getPublicUrl(element.author.avatarUrl)
@@ -565,11 +553,6 @@ io.on("connection", (socket) => {
   socket.on("getNotifications", async (callback) => {
     const userId = socket.request.user.id
     const notifications = await db.GetNotifications(userId)
-    // const backupNotifications =
-    //   notifications.length == 0 && (await db.GetBackupNotifications(userId))
-    // const mapvar =
-    //   backupNotifications.length == 0 ? notifications : backupNotifications
-    // console.log(mapvar)
     const bucket = supabase.storage.from("AvatarUrls")
     const fullNotifications = notifications.map((element) => {
       const { data, error } = element.sender.avatarUrl
@@ -580,15 +563,8 @@ io.on("connection", (socket) => {
         sender: { ...element.sender, avatarUrl: data.publicUrl },
       }
     })
-    console.log(fullNotifications)
-    socket.emit("cleanNotifications")
-    // data: {
-    //   ...notifications,
-    //   avatarUrl: notifications.receiver.avatarUrl
-    //     ? bucket.getPublicUrl(notifications.receiver.avatarUrl)
-    //     : bucket.getPublicUrl("default-user-pic.jpg"),
-    //   receivedNotifications: fullNotifications,
-    // },
+    //
+    socket.emit("cleanNotification", "test")
 
     callback({
       status: "ok",
@@ -618,9 +594,12 @@ io.on("connection", (socket) => {
       const { data, error } = element.avatarUrl
         ? bucket.getPublicUrl(element.avatarUrl)
         : bucket.getPublicUrl("default-user-pic.jpg")
-      return { ...element, avatarUrl: data.publicUrl }
+      return {
+        ...element,
+        avatarUrl: element.githubID ? element.avatarUrl : data.publicUrl,
+      }
     })
-    console.log(suggestions)
+
     callback({
       status: "ok",
       data: fullSuggestions,
@@ -630,11 +609,10 @@ io.on("connection", (socket) => {
 })
 
 io.on("hello", async (params) => {
-  // console.log(params)
+  //
 })
 
 app.get("/", (req, res) => {
-  console.log("asdasd")
   res.json("heyyy")
 })
 
@@ -642,10 +620,7 @@ app.post("/users", controller.NewUserPost)
 app.get(
   "/protected",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    console.log(req.user)
-    console.log("IOASDHAIOSHDAS")
-  }
+  (req, res) => {}
 )
 app.post("/login", controller.loginPost)
 app.get("/auth", (req, res) => {
@@ -656,8 +631,8 @@ app.get(
   "/auth/github/callback",
   passport.authenticate("github"),
   (req, res) => {
-    // console.log(req.isAuthenticated())
-    // console.log(req.user)
+    //
+    //
     req.session.save(() => {
       res.json("succes")
     })
@@ -677,10 +652,8 @@ app.post(
 )
 
 app.get("/test", (req, res) => {
-  // console.log(req.isAuthenticated())
+  //
   res.json("faasd")
 })
 const PORT = process.env.PORT || 3000
-server.listen(PORT, () => {
-  console.log(`Server running at port ${PORT}`)
-})
+server.listen(PORT, () => {})

@@ -25,10 +25,9 @@ function NotificationListener() {
       timer = setTimeout(() => {
         setErrorNotification(false)
       }, 2000)
-      console.log(data)
     })
     // socket.on("deleteNotification", () => {
-    //   console.log("DELETE")
+    //
     //   setMessage("post was deleted")
     //   setPostNotification(true)
     //   timer = setTimeout(() => {
@@ -36,7 +35,6 @@ function NotificationListener() {
     //   }, 1500)
     // })
     return () => {
-      console.log("COMMENT")
       socket.off("postNotification")
       socket.off("notification")
       socket.off("errorNotification")

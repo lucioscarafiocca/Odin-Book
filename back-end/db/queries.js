@@ -42,7 +42,6 @@ async function GetUser(id) {
 }
 
 async function GetUserByName(name, clientId) {
-  console.log(name)
   const user = await prisma.user.findUnique({
     where: {
       username: name,
@@ -124,8 +123,8 @@ async function FindOrCreate(profile) {
       data: {
         username: profile.username || profile.displayName,
         githubID: profile.nodeId,
-        password: null,
-        email: profile._json.email || null,
+        password: "",
+        email: profile._json.email || "",
         avatarUrl: profile._json.avatar_url,
       },
     })
@@ -143,10 +142,9 @@ async function CreatePost(text, authorId, postId, publicUrl) {
         imageUrl: publicUrl || null,
       },
     })
-    console.log(post)
+
     return post
   } catch (err) {
-    console.log(err)
     return null
   }
 }
@@ -177,11 +175,7 @@ async function GetPosts(username, clientId, page) {
     skip: 20 * page,
     take: 20,
   })
-  // const posts = await prisma.post.deleteMany({
-  //   where: {
-  //     text: "LOVES ntr",
-  //   },
-  // })
+
   return posts
 }
 
@@ -249,7 +243,6 @@ async function GetPost(postId, clientId) {
     })
     return post
   } catch (error) {
-    console.log(error)
     return null
   }
 }
@@ -272,7 +265,7 @@ async function LikePost(postId, userId) {
       likes: { increment: 1 },
     },
   })
-  console.log(post)
+
   return post
 }
 
@@ -317,7 +310,6 @@ async function CreateComment(text, userId, postId, publicUrl) {
     return comment
   } catch (error) {
     return null
-    console.log(error)
   }
 }
 
@@ -416,8 +408,6 @@ async function GetFollowing(userId) {
   return following
 }
 async function UpdateUser(username, status, userId) {
-  console.log(status)
-  console.log(username)
   const user = await prisma.user.update({
     where: {
       id: userId,
@@ -482,7 +472,7 @@ async function CreateNotifications(type, postId, senderId, receiverId) {
   })
 }
 async function GetNotifications(id) {
-  const user = prisma.notification.findMany({
+  const user = await prisma.notification.updateManyAndReturn({
     where: {
       receiverId: id,
       isRead: false,
@@ -522,18 +512,24 @@ async function GetNotifications(id) {
         },
       },
     },
-    // data: {
-    //   isRead: true,
-    // },
+    data: {
+      isRead: true,
+    },
   })
+
   if (user.length == 0) {
-    const user = prisma.notification.findMany({
+    const user = await prisma.notification.findMany({
       where: {
         receiverId: id,
       },
       include: {
         post: {
           include: {
+            _count: {
+              select: {
+                replies: true,
+              },
+            },
             likedBy: {
               where: {
                 id: id,
@@ -563,11 +559,13 @@ async function GetNotifications(id) {
       },
       take: 5,
     })
+
     return user
   } else {
     return user
   }
 }
+
 async function GetBackupNotifications(id) {
   const user = prisma.notification.findMany({
     where: {
@@ -616,11 +614,8 @@ async function RemoveNotification(type, postId, senderId, receiverId) {
       receiverId: receiverId,
     },
   })
-  console.log(a)
 }
 async function RemovePost(postId, userId) {
-  console.log(postId)
-  console.log(userId)
   await prisma.post.deleteMany({
     where: {
       id: postId,
@@ -644,22 +639,22 @@ async function GetSuggestions(id) {
     },
     take: 3,
   })
-  console.log(suggestions)
+
   return suggestions
 }
 async function SearchHomepagePostsTop(id, cursor) {
   const results = await prisma.$queryRaw`SELECT * from (
-    (SELECT MAX(CASE WHEN "pt"."B" = ${id} THEN "pt"."B" END) , "post"."id" , "post"."text",  "post"."likes", "username", "post"."CreatedAt", "post"."imageUrl", "user"."avatarUrl" , CAST(COUNT( DISTINCT "reply"."id") AS INT) FROM "Post" "post"  LEFT JOIN "Post" "reply" ON "post"."id" = "reply"."parentId" JOIN "User" "user" ON "post"."authorId" = "user"."id" JOIN "Follow" "follow" ON "followingId" = "user"."id" LEFT JOIN "_PostToUser" "pt" ON "post"."id" = "pt"."A" WHERE "followerId" = ${id}  GROUP BY post.id, username, "user"."avatarUrl" ORDER BY post.id LIMIT 250)
+    (SELECT MAX(CASE WHEN "pt"."B" = ${id} THEN "pt"."B" END) , "post"."id" , "post"."text",  "post"."likes", "username", "post"."CreatedAt", "post"."imageUrl", "user"."avatarUrl" , CAST(COUNT( DISTINCT "reply"."id") AS INT) FROM "Post" "post"  LEFT JOIN "Post" "reply" ON "post"."id" = "reply"."parentId" JOIN "User" "user" ON "post"."authorId" = "user"."id" JOIN "Follow" "follow" ON "followingId" = "user"."id" LEFT JOIN "_PostToUser" "pt" ON "post"."id" = "pt"."A" WHERE "followerId" = ${id} AND "post"."parentId" IS NULL GROUP BY post.id, username, "user"."avatarUrl" ORDER BY post.id LIMIT 250)
     UNION ALL
-    (SELECT MAX(CASE WHEN "pt"."B" = ${id} THEN "pt"."B" END) , "post"."id" , "post"."text",  "post"."likes", "username", "post"."CreatedAt", "post"."imageUrl", "user"."avatarUrl" , CAST(COUNT( DISTINCT "reply"."id") AS INT) FROM "Post" "post" LEFT JOIN "Post" "reply" ON "post"."id" = "reply"."parentId" JOIN "User" "user" ON "post"."authorId" = "user"."id" LEFT JOIN "_PostToUser" "pt" ON "post"."id" = "pt"."A" WHERE "post"."authorId" NOT IN (SELECT "followingId" FROM "Follow" WHERE "followerId" = ${id}) AND "post"."authorId" != ${id}   GROUP BY post.id, username , "user"."avatarUrl" ORDER BY post.id LIMIT 250)) AS a  WHERE (${cursor}::int IS NULL OR id > ${cursor}) ORDER BY id DESC LIMIT 20 
+    (SELECT MAX(CASE WHEN "pt"."B" = ${id} THEN "pt"."B" END) , "post"."id" , "post"."text",  "post"."likes", "username", "post"."CreatedAt", "post"."imageUrl", "user"."avatarUrl" , CAST(COUNT( DISTINCT "reply"."id") AS INT) FROM "Post" "post" LEFT JOIN "Post" "reply" ON "post"."id" = "reply"."parentId" JOIN "User" "user" ON "post"."authorId" = "user"."id" LEFT JOIN "_PostToUser" "pt" ON "post"."id" = "pt"."A" WHERE "post"."authorId" NOT IN (SELECT "followingId" FROM "Follow" WHERE "followerId" = ${id}) AND "post"."authorId" != ${id} AND "post"."parentId" IS NULL GROUP BY post.id, username , "user"."avatarUrl" ORDER BY post.id LIMIT 250)) AS a  WHERE (${cursor}::int IS NULL OR id > ${cursor}) ORDER BY id DESC LIMIT 20 
     `
   return results
 }
 async function SearchHomepagePostsBottom(id, cursor) {
   const results = await prisma.$queryRaw`SELECT * from (
-    (SELECT MAX(CASE WHEN "pt"."B" = ${id} THEN "pt"."B" END) , "post"."id" , "post"."text",  "post"."likes",  "username", "post"."CreatedAt", "post"."imageUrl", "user"."avatarUrl" , CAST(COUNT( DISTINCT "reply"."id") AS INT) FROM "Post" "post" LEFT JOIN "Post" "reply" ON "post"."id" = "reply"."parentId" JOIN "User" "user" ON "post"."authorId" = "user"."id" JOIN "Follow" "follow" ON "followingId" = "user"."id" LEFT JOIN "_PostToUser" "pt" ON "post"."id" = "pt"."A" WHERE "followerId" = ${id}  GROUP BY post.id, username , "user"."avatarUrl" ORDER BY post.id LIMIT 250)
+    (SELECT MAX(CASE WHEN "pt"."B" = ${id} THEN "pt"."B" END) , "post"."id" , "post"."text",  "post"."likes",  "username", "post"."CreatedAt", "post"."imageUrl", "user"."avatarUrl" , CAST(COUNT( DISTINCT "reply"."id") AS INT) FROM "Post" "post" LEFT JOIN "Post" "reply" ON "post"."id" = "reply"."parentId" JOIN "User" "user" ON "post"."authorId" = "user"."id" JOIN "Follow" "follow" ON "followingId" = "user"."id" LEFT JOIN "_PostToUser" "pt" ON "post"."id" = "pt"."A" WHERE "followerId" = ${id} AND "post"."parentId" IS NULL GROUP BY post.id, username , "user"."avatarUrl" ORDER BY post.id LIMIT 250)
     UNION ALL
-    (SELECT MAX(CASE WHEN "pt"."B" = ${id} THEN "pt"."B" END) , "post"."id" ,  "post"."text",  "post"."likes",  "username", "post"."CreatedAt" , "post"."imageUrl" , "user"."avatarUrl" , CAST(COUNT( DISTINCT "reply"."id") AS INT) FROM "Post" "post" LEFT JOIN "Post" "reply" ON "post"."id" = "reply"."parentId" JOIN "User" "user" ON "post"."authorId" = "user"."id" LEFT JOIN "_PostToUser" "pt" ON "post"."id" = "pt"."A" WHERE "post"."authorId" NOT IN (SELECT "followingId" FROM "Follow" WHERE "followerId" = ${id}) AND "post"."authorId" != ${id}  GROUP BY post.id, username , "user"."avatarUrl" ORDER BY post.id LIMIT 250)) AS a  WHERE (${cursor}::int IS NULL OR id < ${cursor}) ORDER BY id DESC LIMIT 20 
+    (SELECT MAX(CASE WHEN "pt"."B" = ${id} THEN "pt"."B" END) , "post"."id" ,  "post"."text",  "post"."likes",  "username", "post"."CreatedAt" , "post"."imageUrl" , "user"."avatarUrl" , CAST(COUNT( DISTINCT "reply"."id") AS INT) FROM "Post" "post" LEFT JOIN "Post" "reply" ON "post"."id" = "reply"."parentId" JOIN "User" "user" ON "post"."authorId" = "user"."id" LEFT JOIN "_PostToUser" "pt" ON "post"."id" = "pt"."A" WHERE "post"."authorId" NOT IN (SELECT "followingId" FROM "Follow" WHERE "followerId" = ${id}) AND "post"."authorId" != ${id} AND "post"."parentId" IS NULL GROUP BY post.id, username , "user"."avatarUrl" ORDER BY post.id LIMIT 250)) AS a  WHERE (${cursor}::int IS NULL OR id < ${cursor}) ORDER BY id DESC LIMIT 20 
     `
   return results
 }
@@ -693,7 +688,6 @@ export default {
   GetNotifications,
   RemoveNotification,
   RemovePost,
-  GetBackupNotifications,
   GetSuggestions,
 }
 

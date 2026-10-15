@@ -40,7 +40,7 @@ function SearchPage() {
     const search = searchParams.get("q")
     if (data.length == key && !loadingPosts) {
       setLoadingPosts(true)
-      console.log(data)
+
       socket.emit("searchData", search, page + 1, (posts) => {
         // setLoadingPosts(false)
         setClient(posts.data.client)
@@ -70,7 +70,7 @@ function SearchPage() {
     const currentDate = new Date()
     const date = new Date(timestamp)
     const result = Math.floor((currentDate - date) / (1000 * 60 * 60))
-    console.log(result)
+
     return result > 24
       ? date.getDate() +
           " " +
@@ -109,7 +109,6 @@ function SearchPage() {
           setUsers(res.data.fullUsers)
           setSearch(name)
           // res.data[0] ? setUsers(res.data.users) : setUsers(["no user found"])
-          console.log(res)
         }
       )
     } else {
@@ -125,7 +124,7 @@ function SearchPage() {
           : { ...element, followers: [] }
         : element
     })
-    console.log(newUsers)
+
     setSuggestions(newUsers)
 
     socket.emit("follow", id)
@@ -161,19 +160,17 @@ function SearchPage() {
           : { ...element, likes: element.likes + 1, likedBy: [client.username] }
         : element
     })
-    console.log(newPosts)
+
     setData(newPosts)
     socket.emit("likedpost", postId)
   }
 
   useEffect(() => {
     const search = searchParams.get("q")
-    console.log(search)
-    console.log(search == false)
+
     // rowVirtualizer.measure()
     rowVirtualizer.scrollToOffset(0)
     socket.emit("searchData", search.toLowerCase(), 0, (data) => {
-      console.log(data)
       setPage(0)
       setClient(data.data.client)
       setData(data.data.fullData)
@@ -183,9 +180,7 @@ function SearchPage() {
       setSearch(search)
     })
     const handleClickOutside = (event) => {
-      console.log(event)
       if (menuRef.current && !menuRef.current.contains(event.target)) {
-        console.log("asdasdasd")
         setUsers(undefined)
       }
     }
@@ -202,7 +197,6 @@ function SearchPage() {
 
   return (
     <>
-      {console.log(client)}
       {loading ? (
         <div
           className="h-lvh bg-black flex  items-center justify-center grow  "
@@ -332,9 +326,7 @@ function SearchPage() {
               >
                 {rowVirtualizer.getVirtualItems().map((virtualItem) => {
                   const element = data[virtualItem.index]
-                  // console.log(element)
-                  // console.log(posts.length)
-                  // console.log(virtualItem.index)
+
                   return (
                     <div
                       key={virtualItem.index}
@@ -361,7 +353,6 @@ function SearchPage() {
                           //   setMorePosts(true)
                           // }}
                         >
-                          {console.log(entry)}
                           {inView
                             ? handleMorePosts(virtualItem.index)
                             : "asdasd"}
@@ -555,7 +546,6 @@ function SearchPage() {
                       </div>
                       {suggestions &&
                         suggestions.map((element) => {
-                          console.log("asdasdasdasdasd")
                           return (
                             <div
                               className="flex-col items-center w-full pl-4 pr-4 border-b border-[#16181C]  hover:bg-white/10 transition-colors duration-200 font-bold text-xl  "

@@ -16,8 +16,8 @@ function App() {
     confirmPassword: "",
   })
   const [isConnected, setIsConnected] = useState()
-  const [email, setEmail] = useState()
-  const [password, setPassword] = useState()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [text, setText] = useState("hello")
   const client_id = import.meta.env.VITE_CLIENT_ID
   const url = import.meta.env.VITE_URL
@@ -32,21 +32,17 @@ function App() {
         confirmPassword: userData.confirmPassword,
         email: userData.email.toLowerCase(),
       })
-      .then((response) => {
-        console.log(response)
-      })
+      .then((response) => {})
       .catch((error) => {
         if (error.response.status == 422) {
-          console.log(error.response.data.errors)
           setError(error.response.data.errors)
         }
-        console.log(error.response)
       })
   }
 
-  function handleLogin(e) {
+  function handleLogin(e, guestEmail, guestPassword) {
     e.preventDefault()
-    if (email && password) {
+    if ((email && password) || (guestEmail && guestPassword)) {
       axios
         .post(
           import.meta.env.VITE_API_URL
@@ -54,12 +50,11 @@ function App() {
             : "http://localhost:3000/login",
           {
             headers: { "Content-Type": "application/json" },
-            email: email.toLowerCase(),
-            password,
+            email: guestEmail || email.toLowerCase(),
+            password: guestPassword || password,
           }
         )
         .then((res) => {
-          console.log(res)
           setLocalStorage(res.data)
           // socket.disconnect()
           // navigate("/home")
@@ -68,15 +63,14 @@ function App() {
           ///retry connection
         })
         .catch((err) => {
-          console.log(err.response)
           setError(err.response.data)
         })
       // socket.emit("login", email, password, (response) => {
       //   if (response.status == "ok") {
-      //     console.log(response)
+      //
       //     setLocalStorage(response.data)
       //   } else {
-      //     console.log(response.error.message)
+      //
       //   }
       // })
     }
@@ -85,7 +79,6 @@ function App() {
 
   useEffect(() => {
     socket.on("connect", () => {
-      console.log(socket.id)
       // setIsConnected(true)
       navigate("/home")
     })
@@ -93,8 +86,8 @@ function App() {
     //   .get("http://localhost:3000/test", {
     //     withCredentials: true,
     //   })
-    //   .then((res) => console.log(res))
-    //   .catch((err) => console.log(err))
+    //   .then((res) =>
+    //   .catch((err) =>
     // attachInterceptor()
     // axios.get("http://localhost:3000/protected")
   }, [])
@@ -105,13 +98,15 @@ function App() {
         navigate("/home")
       ) : ( */}
       {/* <> */}
-      <div className="h-lvh  p-4 bg-black    text-white flex  items-center">
-        <div className="flex grow-2  justify-center">
-          <div className=" grow flex justify-center items-center">
+      <div className="h-lvh    p-4 bg-black    text-white flex max-md:flex-col max-md:items-center  ">
+        {/* <div className=" grow w-300 max-w-250 max-md:pr-0 max-sm:pr-0 place-content-center  justify-center max-md:grow-0 max-md:flex  max-md:mr-70 ">
+          <div className=" justify-center  items-center">
             <svg
-              className=" h-full  w-full "
+              className=""
               version="1.1"
               id="Layer_1"
+              height="auto"
+              width="100%"
               xmlns:x="&ns_extend;"
               xmlns:i="&ns_ai;"
               xmlns:graph="&ns_graphs;"
@@ -121,7 +116,7 @@ function App() {
               y="0px"
               color="white"
               viewBox="0 0 1400 980"
-              transform="scale(-1, 1)"
+              transform="scale(-1, 1)  "
               enableBackground="new 0 0 1400 980"
               xmlSpace="preserve"
             >
@@ -202,25 +197,57 @@ function App() {
               </g>
             </svg>
           </div>
-        </div>
-        <div className="flex grow  ">
-          <div>
-            <p className="text-8xl pb-20 max-sm:text-3xl text-shadow-white text-shadow-2xs/50">
-              Welcome
+        </div> */}
+        <div className="flex   grow items-center justify-center max-md:mt-20  max-md:w-full max-md:block max-md:pl-5 max-md:pr-5 max-md:items-start">
+          <div className="max-w-100 ">
+            <p className="text-8xl  pb-20 max-sm:text-5xl text-shadow-white text-shadow-2xs/50">
+              Happening Now
             </p>
 
             {error && (
-              <p className="text-2xl flex text-center border border-white rounded-md p-5 mb-5">
+              <p className="text-xl font-extralight flex text-center border gap-2 items-center border-[#16181C] rounded-md p-3 mb-5">
                 <CircleAlert color="red" />
                 {error}
               </p>
             )}
             <form
-              className="flex  flex-col pb-20"
+              className="flex  gap-3 flex-col pb-20"
               action=""
               onSubmit={(e) => handleLogin(e)}
             >
-              <label
+              <label className="relative  flex flex-col   " htmlFor="email">
+                <input
+                  className={`bg-white peer outline-0  border-2 border-gray-900/60 pr-6 align-text-bottom rounded-md  pl-3 text-md  pt-4 pb-1  text-black hover:border-[#1d9bf0] focus:border-[#1d9bf0] transition-colors duration-200`}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder=""
+                  type="text"
+                  name="email"
+                  id="email"
+                />
+                <div
+                  className={`absolute pointer-events-none text-xl  left-3.5 top-[0.5em]  peer-focus:translate-y-[-0.4em] peer-focus:scale-75 peer-focus:text-[#1d9bf0] origin-top-left  peer-not-placeholder-shown:scale-75   peer-not-placeholder-shown:translate-y-[-0.4em] transition-transform text-gray-400/70`}
+                >
+                  Email
+                </div>
+              </label>
+
+              <label className="relative  flex flex-col   " htmlFor="password">
+                <input
+                  className={`bg-white peer outline-0  border-2 border-gray-900/60 pr-6 align-text-bottom rounded-md  pl-3 text-md  pt-4 pb-1  text-black hover:border-[#1d9bf0] focus:border-[#1d9bf0] transition-colors duration-200`}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder=""
+                  type="text"
+                  name="password"
+                  id="password"
+                />
+                <div
+                  className={`absolute pointer-events-none text-xl  left-3.5 top-[0.5em]  peer-focus:translate-y-[-0.4em] peer-focus:scale-75 peer-focus:text-[#1d9bf0] origin-top-left  peer-not-placeholder-shown:scale-75   peer-not-placeholder-shown:translate-y-[-0.4em] transition-transform text-gray-400/70`}
+                >
+                  Password
+                </div>
+              </label>
+
+              {/* <label
                 className="relative flex flex-col text-3xl"
                 htmlFor="email"
               >
@@ -253,14 +280,37 @@ function App() {
                 <div className="absolute left-2 top-1.5 text-[0.7em] peer-focus:-translate-y-1.5 peer-focus:scale-75 origin-top-left  peer-not-placeholder-shown:scale-75   peer-not-placeholder-shown:-translate-y-1.5   transition-transform text-gray-400/70">
                   Password
                 </div>
-              </label>
-              <button className="bg-blue-700 mt-5 rounded-full p-1 pl-10 pr-10 hover:bg-blue-700/50 transition-opacity">
+              </label> */}
+              <button
+                className={`bg-blue-700 mt-5 ${
+                  (email.length == 0 || password.length == 0) &&
+                  "bg-blue-700/40 hover:bg-blue-700/40"
+                } rounded-full p-2 pl-10 pr-10 hover:bg-blue-700/50 transition-all duration-200`}
+              >
                 Login
               </button>
             </form>
 
             <div className="flex flex-col mt-5  ">
-              <button className="bg-white  text-black rounded-full p-1 pl-10 pr-10 hover:text-black/50 transition-opacity">
+              <button
+                onClick={() =>
+                  (window.location.href = `https://github.com/login/oauth/authorize?client_id=${
+                    import.meta.env.VITE_CLIENT_ID
+                  }&response_type=code&scope=repo&redirect_uri=${
+                    import.meta.env.VITE_URL
+                  }`)
+                }
+                className="bg-white place-content-center items-center flex  gap-2 text-black rounded-full p-2 pl-10 pr-10 hover:text-black/50 transition-all duration-200"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                </svg>
                 Sign up with github
               </button>
               <div className="flex items-center m-2 ">
@@ -270,13 +320,18 @@ function App() {
               </div>
               <button
                 onClick={() => navigate("/signup")}
-                className=" bg-blue-700 rounded-full p-1 pl-20 pr-20 hover:bg-blue-700/50 transition-opacity"
+                className=" bg-blue-700 rounded-full p-2 pl-20 pr-20 hover:bg-blue-700/50 transition-all duration-200"
               >
                 Sign up
               </button>
-              <p className="mt-5 mb-3 text-xm">already logged in?</p>
+              <p className="mt-5 mb-3 text-xm">Want to test the app?</p>
 
-              <button className="bg-blue-700 block rounded-full p-1 pl-10 pr-10 hover:bg-blue-700/50 transition-opacity">
+              <button
+                onClick={(e) =>
+                  handleLogin(e, "lucioscarafiocca3@gmail.com", "123123")
+                }
+                className="bg-black block font-bold text-[#1d9bf0] rounded-full p-2 pl-10 pr-10 border border-white hover:bg-gray-900/50 transition-all duration-200"
+              >
                 Guest account
               </button>
             </div>

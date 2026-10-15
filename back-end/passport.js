@@ -14,7 +14,7 @@ const strategy = new JwtStrategy(options, async (payload, done) => {
   try {
     const user = await db.GetUser(payload.sub)
     if (user) {
-      // console.log(user)
+      //
       return done(null, user)
     } else {
       return done(null, false)

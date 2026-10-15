@@ -1,6 +1,5 @@
 function useBasicTypeaheadTriggerMatch(trigger, { minLength = 0 } = {}) {
   return (text) => {
-    console.log(text)
     const triggerIndex = text.lastIndexOf(trigger)
     if (triggerIndex === -1) return null
 
@@ -44,7 +43,6 @@ export function CustomTypeaheadPlugin({ dialog, cords, post }) {
     if (queryString) {
       socket.emit("searchUser", queryString.toLowerCase(), (res) => {
         res.data.fullUsers && setOptions(res.data.fullUsers)
-        console.log(res)
       })
     }
     // editor.registerCommand(
@@ -75,7 +73,7 @@ export function CustomTypeaheadPlugin({ dialog, cords, post }) {
         if (textNodeContainingQuery) {
           textNodeContainingQuery.remove()
         }
-        console.log(options)
+
         const newTextNode = $createTextNode("@" + option.username)
         selection.insertNodes([newTextNode])
 
@@ -98,12 +96,11 @@ export function CustomTypeaheadPlugin({ dialog, cords, post }) {
         anchorElementRef,
         { selectedIndex, selectOptionAndCleanUp, setHighlightedIndex }
       ) => {
-        console.log(options)
-        if (!anchorElementRef.current || options.length === 0) return null
+        if (!anchorElementRef.current || options.length === 0 || !cords)
+          return null
         const dialogRect = dialog.current.getBoundingClientRect()
         const rect = anchorElementRef.current.getBoundingClientRect()
 
-        console.log(cords)
         return (
           <div
             className="typeahead-menu-dropdown fixed border-0    text-white  bg-black"
@@ -113,15 +110,14 @@ export function CustomTypeaheadPlugin({ dialog, cords, post }) {
               position: "absolute",
               top: `${
                 post
-                  ? rect.top - dialogRect.top + 18
-                  : rect.top - dialogRect.top - 50
+                  ? cords.top - dialogRect.top + 18
+                  : cords.top - dialogRect.top - 50
               }px`,
               left: `${0}px`,
             }}
           >
             <ul className=" w-80  max-sm:w-60 ">
               {options.map((option, index) => {
-                console.log(option)
                 const isSelected = selectedIndex === index
                 return (
                   <li
@@ -133,7 +129,9 @@ export function CustomTypeaheadPlugin({ dialog, cords, post }) {
                       background: isSelected ? "#80808030" : "transparent",
                       cursor: "pointer",
                     }}
-                    onClick={() => selectOptionAndCleanUp(option)}
+                    onMouseDown={() => selectOptionAndCleanUp(option)}
+                    onTouchStart={() => selectOptionAndCleanUp(option)}
+                    // onClick={() => selectOptionAndCleanUp(option)}
                   >
                     <img
                       className="max-h-10 rounded-full m-2 ml-2  aspect-square object-cover "

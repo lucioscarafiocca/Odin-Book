@@ -4,11 +4,9 @@ function TypeMenu({ open = false, dialog }) {
   const anchorRef = useRef(null)
 
   useEffect(() => {
-    console.log(open)
     if (open != false) {
       const rect = dialog.current.getBoundingClientRect()
-      console.log(rect)
-      console.log(open)
+
       anchorRef.current.style.display = "block"
       anchorRef.current.style.top = `${open.top - rect.top + 20}px`
       anchorRef.current.style.left = `${open.left - rect.left}px`

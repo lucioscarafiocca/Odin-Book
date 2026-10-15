@@ -6,7 +6,7 @@ import CreateComment from "./components/CreateComment"
 import { useWindowVirtualizer } from "@tanstack/react-virtual"
 import CreatePost from "./components/CreatePost"
 import SearchSidebar from "./components/SearchSidebar"
-import { Heart, MessageCircle, Repeat } from "lucide-react"
+import { Heart, MessageCircle, Repeat, ArrowLeft } from "lucide-react"
 import NotificationListener from "./components/NotificationListener"
 import Footer from "./components/Footer"
 
@@ -19,7 +19,7 @@ function MainPage() {
   const [text, setText] = useState()
   const [fetching, setFetching] = useState(false)
   const [key, setKey] = useState(true)
-  const [count, setCount] = useState(60)
+  const [count, setCount] = useState(500)
   // const [postNotification, setPostNotification] = useState(false)
   const navigate = useNavigate()
   const parentRef = useRef()
@@ -38,7 +38,7 @@ function MainPage() {
   //       setUsers(res.data.users)
   //       setSearch(name)
   //       // res.data[0] ? setUsers(res.data.users) : setUsers(["no user found"])
-  //       console.log(res)
+  //
   //     })
   //   } else {
   //     setUsers(undefined)
@@ -49,7 +49,7 @@ function MainPage() {
     const currentDate = new Date()
     const date = new Date(timestamp)
     const result = Math.floor((currentDate - date) / (1000 * 60 * 60))
-    console.log(result)
+
     return result > 24
       ? date.getDate() +
           " " +
@@ -95,7 +95,7 @@ function MainPage() {
           : { ...element, likes: element.likes + 1, max: true }
         : element
     })
-    // console.log(data.user.receivedNotifications[0].post.likedBy.length == 1)
+    //
     // const notificationPosts = data.user.receivedNotifications.map((element) => {
     //   return element.postId == postId
     //     ? element.post.likedBy.length == 1
@@ -118,7 +118,7 @@ function MainPage() {
     //     : element
     // })
 
-    // console.log(notificationPosts)
+    //
     // const newPosts = posts.map((element) => {
     //   return element.id == postId
     //     ? { ...element, likes: element.likes + 1 }
@@ -137,14 +137,11 @@ function MainPage() {
     setOpenModal(postId)
   }
 
-  function triggerNotification() {}
-
   function handleUpdateFeed(cursor) {
     socket.emit("data", { cursor: 46, type: "bottom" }, (response) => {
       if ((response.status = "ok")) {
         setData(response.data)
       }
-      console.log(response)
     })
   }
   const virtualItem = rowVirtualizer.getVirtualItems()
@@ -152,20 +149,16 @@ function MainPage() {
     return Math.floor(num / 20) * 20
   }
 
-  console.log(virtualItem)
-  data && console.log(data.posts)
   // !socket.id && socket.connect()
   useEffect(() => {
-    console.log(data)
     const lastItem = virtualItem ? virtualItem[virtualItem.length - 1] : null
     const firstItem = virtualItem ? virtualItem[0] : null
-    console.log(socket.id)
+
     !data &&
       socket.emit("data", { cursor: null, type: "bottom" }, (response) => {
         if ((response.status = "ok")) {
           setData(response.data)
         }
-        console.log(response)
       })
 
     // socket.on("postNotification", (data) => {
@@ -173,39 +166,39 @@ function MainPage() {
     //   timer = setTimeout(() => {
     //     setPostNotification(false)
     //   }, 1500)
-    //   console.log(data)
+    //
     // })
     // socket.on("newPosNotification", (data) => {
-    //   console.log("update for new posts")
+    //
     // })
     socket.on("connect_error", (err) => {
-      console.log(err)
       navigate("/")
     })
-    console.log(key)
-
+    console.log(firstItem)
+    data && console.log(data.posts[firstItem.index])
+    data && console.log(data.posts)
     if (
       firstItem &&
       data &&
-      data.posts.length >= 40 &&
-      data.posts[firstItem.index] == null &&
+      data.posts.length >= 100 &&
+      data.posts[firstItem.index] === null &&
       !fetching
     ) {
       setFetching(true)
       // setKey(data.posts.length)
       socket.emit(
         "data",
-        { cursor: data.posts[data.posts.length - 40].id, type: "top" },
+        { cursor: data.posts[data.posts.length - 100].id, type: "top" },
         (response) => {
           const last20 = data.posts.slice(data.posts.length - 20, 0)
           const array =
-            lastItem.index + 2 - 60 > 0
-              ? Array(lastItem.index + 2 - 60).fill(null)
+            lastItem.index + 2 - 500 > 0
+              ? Array(lastItem.index + 2 - 500).fill(null)
               : []
           const newArray = [...response.data.posts, ...last20]
           if ((response.status = "ok")) {
             const newPosts = [...array, ...newArray]
-            console.log(newPosts)
+
             setData({ ...response.data, posts: newPosts })
             setFetching(false)
           }
@@ -235,29 +228,28 @@ function MainPage() {
           type: "bottom",
         },
         (response) => {
-          if ((response.status = "ok")) {
+          if ((response.status = "ok") && response.data.posts[0]) {
+            console.log(response)
             const first20 = data.posts.slice(20, data.posts.length)
-            console.log(first20)
+
             const newArray = [...first20, ...response.data.posts]
-            console.log(newArray)
-            console.log(lastItem.index)
+
             const array =
-              lastItem.index + 2 >= 40 &&
+              lastItem.index + 2 >= 100 &&
               Array(
-                lastItem.index + 2 - 40 == 0 || lastItem.index + 2 - 40 < 20
+                lastItem.index + 2 - 100 == 0 || lastItem.index + 2 - 100 < 20
                   ? 20
-                  : roundDownTo20(lastItem.index + 2 - 40)
+                  : roundDownTo20(lastItem.index + 2 - 100)
               ).fill(null)
-            console.log(array)
+
             const newPosts =
-              lastItem.index + 2 >= 40
+              lastItem.index + 2 >= 100
                 ? [...array, ...newArray]
                 : [...data.posts, ...response.data.posts]
-            console.log(newPosts)
+
             setData({ ...response.data, posts: newPosts })
             setFetching(false)
           }
-          console.log(response)
         }
       )
     }
@@ -309,10 +301,20 @@ function MainPage() {
               receivedNotifications: data.user.receivedNotifications,
             }}
           ></Sidebar>
+
           <div
             ref={parentRef}
             className=" flex-col text-white grow-2 max-w-180   max-h-full"
           >
+            {/* <div className=" flex items-center font-bold grow text-2xl sticky top-0 z-100 bg-black/70 backdrop-blur-md gap-7 p-3  ">
+              <img
+                className="max-h-10 rounded-full   ml-4 aspect-square object-cover"
+                src={data.picture}
+                alt=""
+              />
+              <button className="pl-2" onClick={() => navigate(-1)}></button>
+              Home
+            </div> */}
             <div
               ref={listRef}
               className="border box-border max-sm:border-black max-sm:border-0  border-[#16181C]"

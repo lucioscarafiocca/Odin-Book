@@ -27,7 +27,6 @@ function Follow() {
         setUsers(res.data.users)
         setSearch(name)
         // res.data[0] ? setUsers(res.data.users) : setUsers(["no user found"])
-        console.log(res)
       })
     } else {
       setUsers(undefined)
@@ -42,7 +41,7 @@ function Follow() {
           : { ...element, followers: [] }
         : element
     })
-    console.log(newUsers)
+
     setData(newUsers)
 
     socket.emit("follow", id)
@@ -52,13 +51,11 @@ function Follow() {
     const following = location.pathname.includes("/following")
     const { username } = params
     socket.emit("follows", following, username, (res) => {
-      console.log(res)
       setData(res.data.fullres)
       setClient(res.data.client)
     })
     setUsername(username)
     socket.on("connect_error", (err) => {
-      console.log(err)
       navigate("/")
     })
   }, [params])
@@ -75,7 +72,7 @@ function Follow() {
         ></Sidebar>
         <div className=" flex-col   border border-[#16181C] max-sm:border-black max-sm:border-0 max-w-160  grow overflow-y-auto  max-h-full">
           <div className="max-sm:h-full">
-            <div className="flex sticky bg-black/70 backdrop-blur-md gap-5 ">
+            <div className="flex sticky bg-black/70 backdrop-blur-md z-20 gap-5 ">
               <button className="pl-4" onClick={() => navigate(`/${username}`)}>
                 <ArrowLeft className="hover:scale-130 transition-transform duration-200" />
               </button>

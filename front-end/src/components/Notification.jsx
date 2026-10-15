@@ -52,7 +52,7 @@ function Notification({ element, setOpenModal, setData, data }) {
     const currentDate = new Date()
     const date = new Date(timestamp)
     const result = Math.floor((currentDate - date) / (1000 * 60 * 60))
-    console.log(result)
+
     return result > 24
       ? date.getDate() +
           " " +
@@ -66,7 +66,6 @@ function Notification({ element, setOpenModal, setData, data }) {
   }
 
   function handleLike(postId) {
-    console.log(data)
     const newPosts = data.map((element) => {
       return element.postId == postId
         ? element.post.likedBy.length == 1
@@ -88,12 +87,10 @@ function Notification({ element, setOpenModal, setData, data }) {
             }
         : element
     })
-    console.log(newPosts)
+
     setData(newPosts)
     socket.emit("likedpost", postId)
   }
-
-  console.log(element)
 
   return element.type === "mention" || element.type === "comment" ? (
     <div className="transition-colors border-b  border-[#16181C] wrap-anywhere duration-200">
